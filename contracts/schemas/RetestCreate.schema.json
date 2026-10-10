@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hireguard.local/contracts/RetestCreate.schema.json",
+  "title": "RetestCreate",
+  "type": "object",
+  "properties": {
+    "original_run_id": {
+      "type": "string"
+    },
+    "mitigation_version": {
+      "type": "string"
+    },
+    "target_version": {
+      "type": "string",
+      "const": "hardened-v1"
+    }
+  },
+  "required": [
+    "original_run_id",
+    "mitigation_version",
+    "target_version"
+  ],
+  "additionalProperties": false
+}

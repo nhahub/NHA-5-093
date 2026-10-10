@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hireguard.local/contracts/PolicyRule.schema.json",
+  "title": "PolicyRule",
+  "type": "object",
+  "properties": {
+    "rule_id": {
+      "type": "string",
+      "pattern": "^POL-[A-Z]+-[0-9]{2}-[A-Z0-9-]+$"
+    },
+    "version": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "CRITICAL"
+      ]
+    },
+    "checker_type": {
+      "type": "string",
+      "enum": [
+        "EXACT_CANARY",
+        "SCHEMA",
+        "SEMANTIC",
+        "SCORING_DRIFT",
+        "BENIGN_CONTROL"
+      ]
+    },
+    "forbidden_value": {
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "review_required": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "rule_id",
+    "version",
+    "description",
+    "severity",
+    "checker_type",
+    "forbidden_value",
+    "review_required"
+  ],
+  "additionalProperties": false
+}

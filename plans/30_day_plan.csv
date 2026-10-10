@@ -1,0 +1,31 @@
+Day,Week,M1 lead,M2 agent,M3 backend,M4 security,M5 evaluation,M6 frontend,Acceptance evidence
+1,W1,"M1 repo, ownership, ADR",M2 tool/state contract,M3 adapter/API contract,M4 policy IDs,M5 scenario/metric definitions,M6 wireframes,ADR open; repo ready
+2,W1,M1 freeze schema proposal and names,M2 fake NextProbe outputs,M3 FastAPI health+mock,M4 canary rules fixtures,M5 development persona fixtures,M6 scaffold+fixture import,All public contracts reviewed
+3,W1,M1 schema/example contract CI,M2 fixed runner+fake adapter,M3 run create and DB skeleton,M4 PASS/FAIL tests,M5 one DEV and one DEMO case,M6 launch page mock,"All branches pushed, contract tests"
+4,W1,M1 coordinate integration,M2 budget and terminal status,M3 mock run status/events,M4 checker callable,M5 sample metrics output,M6 event timeline mock,Run mock with stored trace
+5,W1,M1 golden test end-to-end,M2 fixed run integrates M3,M3 persistence and trace route,M4 checker wired,M5 evidence fixture verification,M6 first integrated screen,Golden slice UI->mock->trace
+6,W1,M1 review/merge/prune blockers,M2 start LangGraph nodes,M3 error and cancel API,M4 benign controls,M5 dataset plan,M6 review page UI skeleton,Regression tests green
+7,W1,M1 W1 acceptance tag,M2 fixed runner documented,M3 mock backend documented,M4 baseline checker verified,M5 example dataset freeze,M6 integrated demo smoke,W1 tag and 1 pass recorded
+8,W2,M1 dependency contract checks,M2 LLM NextProbe parser,M3 local target v1,M4 injection DEV tests,M5 split-safe DEV cases,M6 status polling implementation,Strict schemas pass
+9,W2,M1 CI docker skeleton,M2 LangGraph branching,M3 target adapter timeout,M4 semantic INCONCLUSIVE,M5 metrics evaluator skeleton,M6 RTL trace display,2 branch traces available
+10,W2,M1 W2 midway integration,M2 2 observed branch traces,M3 run worker and storage,M4 target-only canary matcher,M5 fixed vs adaptive ledger,M6 findings with PENDING,Agent real or labeled MOCK trace
+11,W2,M1 smoke and property tests,M2 tool allowlist+injection defense,M3 model provider integration,M4 unknown tool checker tests,M5 paired Arabic case review,M6 review submit wiring,No arbitrary tool executed
+12,W2,M1 backend/frontend smoke,M2 token budget guard,M3 target usage+latency storage,M4 evidence span IDs,M5 stats script on fixture,M6 API review handling,Confirmed only from review
+13,W2,M1 resolve schema bugs,M2 cancellation/timeouts,M3 idempotent review API,M4 security regression suite,M5 sample report generation,M6 error and loading states,Cancellation/refusal/error recorded
+14,W2,M1 W2 release tag,M2 adaptive+fixed integrated,M3 target real/mock verified,M4 checks integrated,M5 method parity test,M6 live monitor+reviews,Agent + verification + UI work
+15,W3,M1 freeze new P1 features,M2 replay trace state,M3 hardened target v1,M4 mitigation design,M5 consistency cases,M6 retest page,Retest scenario planned
+16,W3,M1 retest integration gate,M2 run comparison parity,M3 retest create API,M4 hardened regression test,M5 MSA/EGY pairs verified,M6 before/after view,Original+retest linked
+17,W3,M1 CI integration failure tests,M2 state recovery/failure,M3 batch isolation,M4 semantic checker citations,M5 scoring script,M6 report JSON page,1 batch failure isolated
+18,W3,M1 complete schema audit,M2 explainability trace tests,M3 immutable review DB audit,M4 no-control false positives,M5 heldout leakage audit,M6 filtering optional omit,All P0 checked
+19,W3,M1 rehearsal slice,M2 no state leakage tests,M3 run quality / performance,M4 security test consolidation,M5 metrics tests with null denom,M6 accessible RTL verification,Every confirmed has evidence
+20,W3,M1 acceptance + mentor check,M2 lock model strategy,M3 target version freeze,M4 policy/test version freeze,M5 split+protocol freeze,M6 output stable comparisons,Experiment protocol signed
+21,W3,M1 feature freeze release,M2 agent test pass,M3 retest/exact fixtures green,M4 checker pass,M5 preflight analysis test pass,M6 review/report/export works,W3 MVP feature complete
+22,W4,M1 validation gate,M2 staged holdout dry-run,M3 queue/backfill health,M4 independent reviewer plan,M5 evaluate first heldout batch,M6 monitoring during runs,No prompts altered after freeze
+23,W4,M1 track cost/time,M2 run failures triage,M3 provider health,M4 review flags,M5 run matrix wave 1,M6 errors UI verified,Run ledger with denominator
+24,W4,M1 QA on second laptop,M2 scenario trace spot-check,M3 DB integrity audit,M4 review flags,M5 run matrix wave 2,M6 export compare correct,No failures hidden
+25,W4,M1 correct reproducibility issues,M2 trace completeness verification,M3 reliability verification,M4 independent adjudication,M5 repeatability runs,M6 reports frozen data,Expected 120 or approved deviation
+26,W4,M1 release candidate tag,M2 replay test support,M3 hardened test support,M4 retest evidence audit,M5 metric computation,M6 demo rehearsal #1,Numbers reproduce from DB
+27,W4,M1 fixes critical bugs only,M2 confirm branch traces,M3 final DB/export fixes,M4 security findings summary,M5 dialect+consistency analysis,M6 presentation visuals,AC checklist evidence
+28,W4,M1 main release candidate,M2 agent docs,M3 API/DB docs,M4 threat report,M5 final experimental report,M6 demo rehearsal #2,W4 release ready
+29,BUFFER,M1 contingency/clean install,M2 critical fixes only,M3 critical fixes only,M4 findings spot audit,M5 report correction only,M6 demo fallback verified,No new features
+30,BUFFER,M1 final sign-off/tag,M2 final smoke,M3 final smoke,M4 final smoke,M5 final numbers sign-off,M6 final demo package,Delivery approved

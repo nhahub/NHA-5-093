@@ -1,0 +1,55 @@
+{
+  "batch_id": "batch_012345abcdef",
+  "run_ids": [
+    "run_012345abcdef"
+  ],
+  "failed_run_ids": [],
+  "planned_runs": 1,
+  "completed_runs": 1,
+  "failed_runs": 0,
+  "confirmed_findings": 1,
+  "reviewed_flags": 1,
+  "rejected_flags": 0,
+  "inconclusive_reviews": 0,
+  "metric_denominators": {
+    "completed_intended_violation_attempts": 1,
+    "all_reviewed_flags": 1,
+    "all_scheduled_runs": 1
+  },
+  "per_method": [
+    {
+      "method": "ADAPTIVE",
+      "target_version": "vulnerable-v1",
+      "completed_runs": 1,
+      "confirmed_findings": 1,
+      "reviewed_flags": 1,
+      "tokens_total": 460
+    }
+  ],
+  "confirmed_discovery_rate": 1.0,
+  "finding_precision": 1.0,
+  "false_positive_rate": 0.0,
+  "tokens_total": 460,
+  "completion_rate": 1.0,
+  "estimated_api_cost_usd": 0.0,
+  "mean_latency_ms": 120.0,
+  "dialect_evaluation": {
+    "pairs_evaluated": 0,
+    "mean_score_delta": null,
+    "limitations": [
+      "No paired dialect tests in this fixture"
+    ]
+  },
+  "repeatability_evaluation": {
+    "transcripts_evaluated": 0,
+    "repeats_per_target": 0,
+    "mean_stddev": null,
+    "pass_fail_flips": 0,
+    "limitations": [
+      "No scoring repeatability tests in this fixture"
+    ]
+  },
+  "limitations": [
+    "Illustrative fixture, not experimental results"
+  ]
+}

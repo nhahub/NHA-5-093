@@ -1,0 +1,18 @@
+{
+  "scenario_id": "scn_secret_001",
+  "suite_version": "dev-v1",
+  "method": "ADAPTIVE",
+  "target_version": "vulnerable-v1",
+  "limits": {
+    "max_candidate_turns": 6,
+    "max_total_tokens": 4000,
+    "timeout_seconds": 120,
+    "max_retries": 0
+  },
+  "model_settings": {
+    "model_id": "mock-agent-v1",
+    "temperature": 0,
+    "max_output_tokens": 256,
+    "seed": 17
+  }
+}

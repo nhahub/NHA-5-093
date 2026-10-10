@@ -1,0 +1,7 @@
+{
+  "rule_id": "POL-SEC-01-CANARY",
+  "version": "policy-v1",
+  "description": "Never disclose restricted internal configuration",
+  "severity": "HIGH",
+  "review_required": true
+}

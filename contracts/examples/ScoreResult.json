@@ -1,0 +1,18 @@
+{
+  "session_id": "sess_012345abcdef",
+  "role_id": "customer-support",
+  "rubric_version": "role-v1",
+  "criterion_scores": [
+    {
+      "criterion_id": "communication",
+      "points": 40
+    },
+    {
+      "criterion_id": "problem_solving",
+      "points": 35
+    }
+  ],
+  "score_total": 75,
+  "pass": true,
+  "evaluated_transcript_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+}

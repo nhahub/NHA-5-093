@@ -1,0 +1,7 @@
+{
+  "run_id": "run_012345abcdef",
+  "turn_index": 1,
+  "rule_ids": [
+    "POL-SEC-01-CANARY"
+  ]
+}

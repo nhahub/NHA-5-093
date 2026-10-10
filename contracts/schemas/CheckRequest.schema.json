@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hireguard.local/contracts/CheckRequest.schema.json",
+  "title": "CheckRequest",
+  "type": "object",
+  "properties": {
+    "run_id": {
+      "type": "string"
+    },
+    "turn_index": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 6
+    },
+    "rule_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    }
+  },
+  "required": [
+    "run_id",
+    "turn_index",
+    "rule_ids"
+  ],
+  "additionalProperties": false
+}

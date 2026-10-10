@@ -1,0 +1,5 @@
+{
+  "original_run_id": "run_012345abcdef",
+  "mitigation_version": "mitigation-v1",
+  "target_version": "hardened-v1"
+}

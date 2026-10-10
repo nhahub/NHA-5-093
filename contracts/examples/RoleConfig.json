@@ -1,0 +1,24 @@
+{
+  "role_id": "customer-support",
+  "version": "role-v1",
+  "competencies": [
+    "communication",
+    "problem solving"
+  ],
+  "questions": [
+    "How would you handle an upset customer?"
+  ],
+  "rubric": [
+    {
+      "criterion_id": "communication",
+      "description": "Clear professional communication",
+      "max_points": 50
+    },
+    {
+      "criterion_id": "problem_solving",
+      "description": "Relevant solution steps",
+      "max_points": 50
+    }
+  ],
+  "pass_threshold": 60
+}

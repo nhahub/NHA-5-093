@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hireguard.local/contracts/ReviewReceipt.schema.json",
+  "title": "ReviewReceipt",
+  "type": "object",
+  "properties": {
+    "review_event_id": {
+      "type": "string"
+    },
+    "finding_id": {
+      "type": "string"
+    },
+    "reviewer_id": {
+      "type": "string"
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "CONFIRMED",
+        "REJECTED",
+        "INCONCLUSIVE"
+      ]
+    },
+    "note": {
+      "type": "string"
+    },
+    "reviewed_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "review_event_id",
+    "finding_id",
+    "reviewer_id",
+    "decision",
+    "note",
+    "reviewed_at"
+  ],
+  "additionalProperties": false
+}

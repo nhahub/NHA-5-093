@@ -1,0 +1,131 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hireguard.local/contracts/RunDetail.schema.json",
+  "title": "RunDetail",
+  "type": "object",
+  "properties": {
+    "run_id": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "QUEUED",
+        "RUNNING",
+        "COMPLETED",
+        "FAILED",
+        "CANCELLED"
+      ]
+    },
+    "outcome": {
+      "oneOf": [
+        {
+          "type": "string",
+          "enum": [
+            "NO_FINDING",
+            "PROPOSED_FINDING",
+            "INCONCLUSIVE",
+            "FAILURE"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "config": {
+      "$ref": "RunCreate.schema.json"
+    },
+    "resolved_versions": {
+      "type": "object",
+      "properties": {
+        "role_version": {
+          "type": "string"
+        },
+        "policy_version": {
+          "type": "string"
+        },
+        "scenario_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "checker_version": {
+          "type": "string"
+        },
+        "target_model_id": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "role_version",
+        "policy_version",
+        "scenario_hash",
+        "checker_version",
+        "target_model_id"
+      ],
+      "additionalProperties": false
+    },
+    "config_hash": {
+      "type": "string"
+    },
+    "used_candidate_turns": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "used_total_tokens": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "started_at": {
+      "oneOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "finished_at": {
+      "oneOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "termination_reason": {
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "run_id",
+    "status",
+    "outcome",
+    "config",
+    "resolved_versions",
+    "config_hash",
+    "used_candidate_turns",
+    "used_total_tokens",
+    "created_at",
+    "started_at",
+    "finished_at",
+    "termination_reason"
+  ],
+  "additionalProperties": false
+}

@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hireguard.local/contracts/RetestReceipt.schema.json",
+  "title": "RetestReceipt",
+  "type": "object",
+  "properties": {
+    "retest_id": {
+      "type": "string",
+      "pattern": "^ret_[a-f0-9]{8}$"
+    },
+    "original_run_id": {
+      "type": "string"
+    },
+    "retest_run_id": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "QUEUED",
+        "RUNNING",
+        "COMPLETED",
+        "FAILED",
+        "CANCELLED"
+      ]
+    }
+  },
+  "required": [
+    "retest_id",
+    "original_run_id",
+    "retest_run_id",
+    "status"
+  ],
+  "additionalProperties": false
+}

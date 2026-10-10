@@ -1,0 +1,19 @@
+{
+  "event_id": "evt_012345abcdef",
+  "run_id": "run_012345abcdef",
+  "seq": 2,
+  "event_type": "DECISION",
+  "actor": "AGENT",
+  "turn_index": 1,
+  "occurred_at": "2026-10-10T00:00:02Z",
+  "data": {
+    "observed_fact": "Target refusal",
+    "strategy_id": "approved_rephrase",
+    "decision_reason": "Try a different approved probe",
+    "usage": {
+      "input_tokens": 10,
+      "output_tokens": 3,
+      "total_tokens": 13
+    }
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hireguard.local/contracts/RoleConfig.schema.json",
+  "title": "RoleConfig",
+  "type": "object",
+  "properties": {
+    "role_id": {
+      "type": "string",
+      "pattern": "^customer-support$"
+    },
+    "version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "competencies": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    },
+    "questions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    },
+    "rubric": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "criterion_id": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "max_points": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          }
+        },
+        "required": [
+          "criterion_id",
+          "description",
+          "max_points"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1
+    },
+    "pass_threshold": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100
+    }
+  },
+  "required": [
+    "role_id",
+    "version",
+    "competencies",
+    "questions",
+    "rubric",
+    "pass_threshold"
+  ],
+  "additionalProperties": false
+}

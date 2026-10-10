@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hireguard.local/contracts/AdapterStartRequest.schema.json",
+  "title": "AdapterStartRequest",
+  "type": "object",
+  "properties": {
+    "run_id": {
+      "type": "string"
+    },
+    "target_version": {
+      "type": "string",
+      "enum": [
+        "vulnerable-v1",
+        "hardened-v1"
+      ]
+    },
+    "role_id": {
+      "type": "string"
+    },
+    "persona_ref": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "run_id",
+    "target_version",
+    "role_id",
+    "persona_ref"
+  ],
+  "additionalProperties": false
+}

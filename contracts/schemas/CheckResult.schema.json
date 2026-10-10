@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hireguard.local/contracts/CheckResult.schema.json",
+  "title": "CheckResult",
+  "type": "object",
+  "properties": {
+    "check_id": {
+      "type": "string"
+    },
+    "run_id": {
+      "type": "string"
+    },
+    "turn_index": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 6
+    },
+    "rule_id": {
+      "type": "string"
+    },
+    "result": {
+      "type": "string",
+      "enum": [
+        "PASS",
+        "FAIL",
+        "INCONCLUSIVE"
+      ]
+    },
+    "evidence_event_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 0
+    },
+    "evidence_spans": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 0
+    },
+    "checker_version": {
+      "type": "string"
+    },
+    "reason": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "check_id",
+    "run_id",
+    "turn_index",
+    "rule_id",
+    "result",
+    "evidence_event_ids",
+    "evidence_spans",
+    "checker_version",
+    "reason"
+  ],
+  "additionalProperties": false
+}

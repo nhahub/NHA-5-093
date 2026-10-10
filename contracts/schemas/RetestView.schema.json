@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hireguard.local/contracts/RetestView.schema.json",
+  "title": "RetestView",
+  "type": "object",
+  "properties": {
+    "retest_id": {
+      "type": "string"
+    },
+    "original_run_id": {
+      "type": "string"
+    },
+    "retest_run_id": {
+      "type": "string"
+    },
+    "mitigation_version": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "QUEUED",
+        "RUNNING",
+        "COMPLETED",
+        "FAILED",
+        "CANCELLED"
+      ]
+    },
+    "result": {
+      "oneOf": [
+        {
+          "$ref": "RetestResult.schema.json"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "retest_id",
+    "original_run_id",
+    "retest_run_id",
+    "mitigation_version",
+    "status",
+    "result"
+  ],
+  "additionalProperties": false,
+  "description": "Return status and null result until completed; avoids fabricating mitigation verdict while QUEUED or RUNNING."
+}
