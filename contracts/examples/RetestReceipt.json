@@ -1,0 +1,6 @@
+{
+  "retest_id": "ret_1234abcd",
+  "original_run_id": "run_012345abcdef",
+  "retest_run_id": "run_012345abcdee",
+  "status": "QUEUED"
+}

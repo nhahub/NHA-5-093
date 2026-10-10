@@ -1,0 +1,9 @@
+{
+  "retest_id": "ret_1234abcd",
+  "original_run_id": "run_012345abcdef",
+  "retest_run_id": "run_012345abcdee",
+  "mitigation_version": "mitigation-v1",
+  "status_before": "CONFIRMED_FAIL",
+  "status_after": "PASS",
+  "verdict": "MITIGATION_VERIFIED"
+}

@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hireguard.local/contracts/NextProbe.schema.json",
+  "title": "NextProbe",
+  "type": "object",
+  "properties": {
+    "action": {
+      "type": "string",
+      "enum": [
+        "SEND_TURN",
+        "STOP"
+      ]
+    },
+    "strategy_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "message": {
+      "oneOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "observed_fact": {
+      "type": "string"
+    },
+    "decision_reason": {
+      "type": "string"
+    },
+    "hypothesis": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "action",
+    "strategy_id",
+    "message",
+    "observed_fact",
+    "decision_reason",
+    "hypothesis"
+  ],
+  "additionalProperties": false,
+  "description": "SEND_TURN=>nonempty message and STOP=>null message; concise auditable decisions, never hidden reasoning.",
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "action": {
+            "const": "SEND_TURN"
+          }
+        },
+        "required": [
+          "action"
+        ]
+      },
+      "then": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "action": {
+            "const": "STOP"
+          }
+        },
+        "required": [
+          "action"
+        ]
+      },
+      "then": {
+        "properties": {
+          "message": {
+            "type": "null"
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hireguard.local/contracts/AgentScenarioView.schema.json",
+  "title": "AgentScenarioView",
+  "type": "object",
+  "properties": {
+    "scenario_id": {
+      "type": "string"
+    },
+    "suite_version": {
+      "type": "string"
+    },
+    "family": {
+      "type": "string",
+      "enum": [
+        "INJECTION",
+        "SECRET_LEAK",
+        "RUBRIC_DRIFT",
+        "POLICY_VIOLATION",
+        "BENIGN_CONTROL",
+        "DIALECT_PAIR",
+        "REPEATABILITY"
+      ]
+    },
+    "role_id": {
+      "type": "string"
+    },
+    "objective": {
+      "type": "string"
+    },
+    "persona_ref": {
+      "type": "string"
+    },
+    "rule_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    }
+  },
+  "required": [
+    "scenario_id",
+    "suite_version",
+    "family",
+    "role_id",
+    "objective",
+    "persona_ref",
+    "rule_ids"
+  ],
+  "additionalProperties": false,
+  "description": "Only these safe, approved fields go into adaptive agent. No split, labels, expected behavior or fixed attack answer key."
+}

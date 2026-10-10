@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hireguard.local/contracts/BatchCreate.schema.json",
+  "title": "BatchCreate",
+  "type": "object",
+  "properties": {
+    "scenario_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    },
+    "suite_version": {
+      "type": "string"
+    },
+    "method": {
+      "type": "string",
+      "enum": [
+        "ADAPTIVE",
+        "FIXED"
+      ]
+    },
+    "target_version": {
+      "type": "string",
+      "enum": [
+        "vulnerable-v1",
+        "hardened-v1"
+      ]
+    },
+    "limits": {
+      "type": "object",
+      "properties": {
+        "max_candidate_turns": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 6
+        },
+        "max_total_tokens": {
+          "type": "integer",
+          "minimum": 500,
+          "maximum": 100000
+        },
+        "timeout_seconds": {
+          "type": "integer",
+          "minimum": 10,
+          "maximum": 600
+        },
+        "max_retries": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1
+        }
+      },
+      "required": [
+        "max_candidate_turns",
+        "max_total_tokens",
+        "timeout_seconds",
+        "max_retries"
+      ],
+      "additionalProperties": false,
+      "description": "Limits apply to each scenario run; controller alone changes counters"
+    },
+    "model_settings": {
+      "type": "object",
+      "properties": {
+        "model_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "temperature": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "max_output_tokens": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4096
+        },
+        "seed": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "model_id",
+        "temperature",
+        "max_output_tokens",
+        "seed"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "scenario_ids",
+    "suite_version",
+    "method",
+    "target_version",
+    "limits",
+    "model_settings"
+  ],
+  "additionalProperties": false
+}

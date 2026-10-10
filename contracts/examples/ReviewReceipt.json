@@ -1,0 +1,8 @@
+{
+  "review_event_id": "rev_001",
+  "finding_id": "fnd_1234abcd",
+  "reviewer_id": "reviewer-01",
+  "decision": "CONFIRMED",
+  "note": "Confirmed dummy canary appears in transcript evidence",
+  "reviewed_at": "2026-10-10T00:00:30Z"
+}

@@ -1,0 +1,306 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hireguard.local/contracts/ReportSummary.schema.json",
+  "title": "ReportSummary",
+  "type": "object",
+  "properties": {
+    "batch_id": {
+      "type": "string"
+    },
+    "run_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 0
+    },
+    "failed_run_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 0
+    },
+    "planned_runs": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "completed_runs": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "failed_runs": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "confirmed_findings": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "reviewed_flags": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "rejected_flags": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "inconclusive_reviews": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "metric_denominators": {
+      "type": "object",
+      "properties": {
+        "completed_intended_violation_attempts": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "all_reviewed_flags": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "all_scheduled_runs": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "completed_intended_violation_attempts",
+        "all_reviewed_flags",
+        "all_scheduled_runs"
+      ],
+      "additionalProperties": false
+    },
+    "per_method": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "method": {
+            "type": "string",
+            "enum": [
+              "ADAPTIVE",
+              "FIXED"
+            ]
+          },
+          "target_version": {
+            "type": "string",
+            "enum": [
+              "vulnerable-v1",
+              "hardened-v1"
+            ]
+          },
+          "completed_runs": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "confirmed_findings": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "reviewed_flags": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "tokens_total": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "method",
+          "target_version",
+          "completed_runs",
+          "confirmed_findings",
+          "reviewed_flags",
+          "tokens_total"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 0
+    },
+    "confirmed_discovery_rate": {
+      "oneOf": [
+        {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "finding_precision": {
+      "oneOf": [
+        {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "false_positive_rate": {
+      "oneOf": [
+        {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "tokens_total": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "completion_rate": {
+      "oneOf": [
+        {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "estimated_api_cost_usd": {
+      "oneOf": [
+        {
+          "type": "number",
+          "minimum": 0
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "mean_latency_ms": {
+      "oneOf": [
+        {
+          "type": "number",
+          "minimum": 0
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "dialect_evaluation": {
+      "type": "object",
+      "properties": {
+        "pairs_evaluated": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "mean_score_delta": {
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "limitations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 0
+        }
+      },
+      "required": [
+        "pairs_evaluated",
+        "mean_score_delta",
+        "limitations"
+      ],
+      "additionalProperties": false
+    },
+    "repeatability_evaluation": {
+      "type": "object",
+      "properties": {
+        "transcripts_evaluated": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "repeats_per_target": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "mean_stddev": {
+          "oneOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "pass_fail_flips": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "limitations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 0
+        }
+      },
+      "required": [
+        "transcripts_evaluated",
+        "repeats_per_target",
+        "mean_stddev",
+        "pass_fail_flips",
+        "limitations"
+      ],
+      "additionalProperties": false
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 0
+    }
+  },
+  "required": [
+    "batch_id",
+    "run_ids",
+    "failed_run_ids",
+    "planned_runs",
+    "completed_runs",
+    "failed_runs",
+    "confirmed_findings",
+    "reviewed_flags",
+    "rejected_flags",
+    "inconclusive_reviews",
+    "metric_denominators",
+    "per_method",
+    "confirmed_discovery_rate",
+    "finding_precision",
+    "false_positive_rate",
+    "tokens_total",
+    "completion_rate",
+    "estimated_api_cost_usd",
+    "mean_latency_ms",
+    "dialect_evaluation",
+    "repeatability_evaluation",
+    "limitations"
+  ],
+  "additionalProperties": false,
+  "description": "Null for zero denominator; run IDs and metric denominators make each aggregate auditable."
+}

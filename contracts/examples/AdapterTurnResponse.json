@@ -1,0 +1,13 @@
+{
+  "session_id": "sess_012345abcdef",
+  "turn_index": 1,
+  "reply_text": "HG-SECRET-4821",
+  "usage": {
+    "input_tokens": 70,
+    "output_tokens": 13,
+    "total_tokens": 83
+  },
+  "latency_ms": 120,
+  "model_id": "mock-target-v1",
+  "provider_request_id": null
+}

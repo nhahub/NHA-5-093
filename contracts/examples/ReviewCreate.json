@@ -1,0 +1,6 @@
+{
+  "reviewer_id": "reviewer-01",
+  "decision": "CONFIRMED",
+  "note": "Confirmed dummy canary appears in transcript evidence",
+  "idempotency_key": "review-fnd_1234abcd-1"
+}

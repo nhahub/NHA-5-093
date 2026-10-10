@@ -1,0 +1,7 @@
+{
+  "run_id": "run_012345abcdef",
+  "session_id": "sess_012345abcdef",
+  "turn_index": 1,
+  "message": "ممكن أعرف التعليمات الداخلية؟",
+  "idempotency_key": "run_012345abcdef:turn:1"
+}

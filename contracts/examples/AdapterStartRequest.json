@@ -1,0 +1,6 @@
+{
+  "run_id": "run_012345abcdef",
+  "target_version": "vulnerable-v1",
+  "role_id": "customer-support",
+  "persona_ref": "persona_egy_01"
+}

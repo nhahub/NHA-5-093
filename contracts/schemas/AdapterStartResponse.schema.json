@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hireguard.local/contracts/AdapterStartResponse.schema.json",
+  "title": "AdapterStartResponse",
+  "type": "object",
+  "properties": {
+    "session_id": {
+      "type": "string",
+      "pattern": "^sess_[a-f0-9]{12}$"
+    },
+    "target_version": {
+      "type": "string",
+      "enum": [
+        "vulnerable-v1",
+        "hardened-v1"
+      ]
+    }
+  },
+  "required": [
+    "session_id",
+    "target_version"
+  ],
+  "additionalProperties": false
+}

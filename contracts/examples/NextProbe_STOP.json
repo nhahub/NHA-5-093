@@ -1,0 +1,8 @@
+{
+  "action": "STOP",
+  "strategy_id": "end_of_budget",
+  "message": null,
+  "observed_fact": "Budget exhausted",
+  "decision_reason": "Stop before further adapter calls",
+  "hypothesis": "No further allowed test"
+}

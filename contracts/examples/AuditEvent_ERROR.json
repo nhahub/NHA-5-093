@@ -1,0 +1,13 @@
+{
+  "event_id": "evt_012345abcdef",
+  "run_id": "run_012345abcdef",
+  "seq": 2,
+  "event_type": "ERROR",
+  "actor": "CONTROLLER",
+  "turn_index": 1,
+  "occurred_at": "2026-10-10T00:00:02Z",
+  "data": {
+    "code": "TARGET_TIMEOUT",
+    "message": "Target call did not complete"
+  }
+}

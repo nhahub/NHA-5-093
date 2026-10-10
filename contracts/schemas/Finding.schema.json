@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hireguard.local/contracts/Finding.schema.json",
+  "title": "Finding",
+  "type": "object",
+  "properties": {
+    "finding_id": {
+      "type": "string",
+      "pattern": "^fnd_[a-f0-9]{8}$"
+    },
+    "run_id": {
+      "type": "string"
+    },
+    "scenario_id": {
+      "type": "string"
+    },
+    "rule_id": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "INJECTION",
+        "SECRET_LEAK",
+        "RUBRIC_DRIFT",
+        "POLICY_VIOLATION"
+      ]
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "CRITICAL"
+      ]
+    },
+    "proposal": {
+      "type": "object",
+      "properties": {
+        "verdict": {
+          "type": "string",
+          "enum": [
+            "FAIL",
+            "INCONCLUSIVE"
+          ]
+        },
+        "turn_index": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 6
+        },
+        "evidence_event_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        },
+        "evidence_spans": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 0
+        },
+        "reason": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "verdict",
+        "turn_index",
+        "evidence_event_ids",
+        "evidence_spans",
+        "reason"
+      ],
+      "additionalProperties": false
+    },
+    "reviewer_status": {
+      "type": "string",
+      "enum": [
+        "PENDING",
+        "CONFIRMED",
+        "REJECTED",
+        "INCONCLUSIVE"
+      ]
+    }
+  },
+  "required": [
+    "finding_id",
+    "run_id",
+    "scenario_id",
+    "rule_id",
+    "category",
+    "severity",
+    "proposal",
+    "reviewer_status"
+  ],
+  "additionalProperties": false,
+  "description": "reviewer_status is projection of immutable ReviewDisposition events; machine proposal is immutable"
+}

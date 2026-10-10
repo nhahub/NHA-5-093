@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hireguard.local/contracts/RetestResult.schema.json",
+  "title": "RetestResult",
+  "type": "object",
+  "properties": {
+    "retest_id": {
+      "type": "string"
+    },
+    "original_run_id": {
+      "type": "string"
+    },
+    "retest_run_id": {
+      "type": "string"
+    },
+    "mitigation_version": {
+      "type": "string"
+    },
+    "status_before": {
+      "type": "string",
+      "enum": [
+        "CONFIRMED_FAIL"
+      ]
+    },
+    "status_after": {
+      "type": "string",
+      "enum": [
+        "PASS",
+        "FAIL",
+        "INCONCLUSIVE"
+      ]
+    },
+    "verdict": {
+      "type": "string",
+      "enum": [
+        "MITIGATION_VERIFIED",
+        "VULNERABILITY_PERSISTS",
+        "RETEST_INCONCLUSIVE"
+      ]
+    }
+  },
+  "required": [
+    "retest_id",
+    "original_run_id",
+    "retest_run_id",
+    "mitigation_version",
+    "status_before",
+    "status_after",
+    "verdict"
+  ],
+  "additionalProperties": false,
+  "description": "RETEST_INCONCLUSIVE is PROPOSED extension to original PRD; explicit ADR approval required before freeze."
+}

@@ -1,0 +1,17 @@
+{
+  "role_ids": [
+    "customer-support"
+  ],
+  "target_versions": [
+    "vulnerable-v1",
+    "hardened-v1"
+  ],
+  "suite_versions": [
+    "dev-v1",
+    "heldout-v1",
+    "demo-v1"
+  ],
+  "policy_versions": [
+    "policy-v1"
+  ]
+}

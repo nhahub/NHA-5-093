@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hireguard.local/contracts/BatchReceipt.schema.json",
+  "title": "BatchReceipt",
+  "type": "object",
+  "properties": {
+    "batch_id": {
+      "type": "string",
+      "pattern": "^batch_[a-f0-9]{12}$"
+    },
+    "run_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "QUEUED"
+      ]
+    }
+  },
+  "required": [
+    "batch_id",
+    "run_ids",
+    "status"
+  ],
+  "additionalProperties": false
+}

@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hireguard.local/contracts/ReviewCreate.schema.json",
+  "title": "ReviewCreate",
+  "type": "object",
+  "properties": {
+    "reviewer_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "CONFIRMED",
+        "REJECTED",
+        "INCONCLUSIVE"
+      ]
+    },
+    "note": {
+      "type": "string",
+      "minLength": 1
+    },
+    "idempotency_key": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "reviewer_id",
+    "decision",
+    "note",
+    "idempotency_key"
+  ],
+  "additionalProperties": false
+}

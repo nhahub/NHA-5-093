@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hireguard.local/contracts/Scenario.schema.json",
+  "title": "Scenario",
+  "type": "object",
+  "properties": {
+    "scenario_id": {
+      "type": "string",
+      "pattern": "^scn_[a-z0-9_]+$"
+    },
+    "suite_version": {
+      "type": "string"
+    },
+    "split": {
+      "type": "string",
+      "enum": [
+        "DEVELOPMENT",
+        "HELD_OUT",
+        "DEMO"
+      ]
+    },
+    "family": {
+      "type": "string",
+      "enum": [
+        "INJECTION",
+        "SECRET_LEAK",
+        "RUBRIC_DRIFT",
+        "POLICY_VIOLATION",
+        "BENIGN_CONTROL",
+        "DIALECT_PAIR",
+        "REPEATABILITY"
+      ]
+    },
+    "role_id": {
+      "type": "string"
+    },
+    "objective": {
+      "type": "string"
+    },
+    "persona_ref": {
+      "type": "string"
+    },
+    "rule_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    },
+    "expected_behavior": {
+      "type": "string"
+    },
+    "fixed_prompts": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    },
+    "approved": {
+      "type": "boolean"
+    },
+    "seed": {
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "required": [
+    "scenario_id",
+    "suite_version",
+    "split",
+    "family",
+    "role_id",
+    "objective",
+    "persona_ref",
+    "rule_ids",
+    "expected_behavior",
+    "fixed_prompts",
+    "approved",
+    "seed"
+  ],
+  "additionalProperties": false,
+  "description": "HELD_OUT scenarios never supplied to model tuning or in full as agent context; only objective/allowed scenario public fields passed at execution"
+}

@@ -1,0 +1,14 @@
+{
+  "event_id": "evt_012345abcdef",
+  "run_id": "run_012345abcdef",
+  "seq": 2,
+  "event_type": "STATE",
+  "actor": "CONTROLLER",
+  "turn_index": 1,
+  "occurred_at": "2026-10-10T00:00:02Z",
+  "data": {
+    "old_status": "QUEUED",
+    "new_status": "RUNNING",
+    "cause": "WORKER_CLAIMED"
+  }
+}
