@@ -1,0 +1,38 @@
+name: Trusted ownership policy
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened, ready_for_review]
+  issue_comment:
+    types: [created]
+permissions:
+  contents: read
+  pull-requests: read
+  statuses: write
+concurrency:
+  group: ownership-${{ github.event.pull_request.number || github.event.issue.number }}
+  cancel-in-progress: true
+jobs:
+  ownership:
+    name: ownership-evaluation
+    if: github.event_name == 'pull_request_target' || (github.event.issue.pull_request && github.event.comment.body == '/check-ownership')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout trusted base only
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.pull_request.base.sha || github.event.repository.default_branch }}
+          persist-credentials: false
+      - name: Bootstrap notice
+        id: policy
+        run: |
+          if [ -f scripts/check_approvals.py ]; then
+            echo 'available=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'Policy not present on base. Independent human review required for bootstrap.'
+            exit 1
+          fi
+      - name: Check current-head approvals using trusted code and team mapping
+        if: steps.policy.outputs.available == 'true'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python3 scripts/check_approvals.py

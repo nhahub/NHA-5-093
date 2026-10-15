@@ -12,3 +12,10 @@ dist/
 *.sqlite
 *.log
 coverage/
+.cache/
+.tools/
+.ruff_cache/
+artifacts/
+*.egg-info/
+playwright-report/
+test-results/

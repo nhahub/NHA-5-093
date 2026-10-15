@@ -1,0 +1,14 @@
+# Unknown M2-M6 handles are tracked in infra/team.json, never fabricated.
+# Register actual write-authorized handles before enabling their integration gates.
+/.github/ @WalidAbdelmeguid
+/infra/ @WalidAbdelmeguid
+/contracts/ @WalidAbdelmeguid
+/scripts/ @WalidAbdelmeguid
+/tests/ @WalidAbdelmeguid
+/docs/decisions/ @WalidAbdelmeguid
+/pyproject.toml @WalidAbdelmeguid
+/uv.lock @WalidAbdelmeguid
+/package.json @WalidAbdelmeguid
+/package-lock.json @WalidAbdelmeguid
+/Makefile @WalidAbdelmeguid
+# CODEOWNERS is additive to, and not a substitute for, the trusted approval policy.

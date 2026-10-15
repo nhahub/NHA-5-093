@@ -1,74 +1,146 @@
-"""Validate HireGuard's canonical example payloads and OpenAPI JSON-schema references.
-Run: pip install jsonschema PyYAML && python scripts/validate_contracts.py
-"""
+"""Validate all canonical examples, API structure, tools and the fixture chain."""
+
 from __future__ import annotations
+
+import copy
 import json
+import sys
 from pathlib import Path
-import warnings
+
 import yaml
-from jsonschema import Draft202012Validator, FormatChecker
-from referencing import Registry, Resource
-ROOT=Path(__file__).resolve().parents[1]
-S=ROOT/'contracts/schemas'; E=ROOT/'contracts/examples'
-schemas={p.stem.replace('.schema',''): json.loads(p.read_text(encoding='utf-8')) for p in S.glob('*.schema.json')}
-registry=Registry()
-for name,data in schemas.items():
- Draft202012Validator.check_schema(data)
- registry=registry.with_resource(data['$id'], Resource.from_contents(data))
-for name,data in schemas.items():
- f=E/(name+'.json')
- if not f.is_file():raise SystemExit(f'MISSING EXAMPLE: {name}')
- value=json.loads(f.read_text(encoding='utf-8'))
- validator=Draft202012Validator(data, registry=registry, format_checker=FormatChecker())
- errors=list(validator.iter_errors(value))
- if errors:raise SystemExit(f'{name}: '+ '; '.join(str(err) for err in errors))
-api=yaml.safe_load((ROOT/'contracts/openapi.yaml').read_text(encoding='utf-8'))
-assert api['openapi']=='3.1.0'
-for path,methods in api['paths'].items():
- for method,op in methods.items():
-  blocks=[op.get('requestBody',{})]+list(op.get('responses',{}).values())
-  def walk(o):
-   if isinstance(o,dict):
-    for k,v in o.items():
-     if k=='$ref':
-      p=(ROOT/'contracts'/v).resolve()
-      if not p.is_file():raise SystemExit(f'Bad OpenAPI $ref {v} at {path} {method}')
-     else:walk(v)
-   elif isinstance(o,list):
-    for x in o:walk(x)
-  for b in blocks:walk(b)
-print(f'PASS: {len(schemas)} Draft-2020-12 schemas, {len(schemas)} primary examples, {len(api["paths"])} OpenAPI routes validated')
+from jsonschema import Draft202012Validator
+from openapi_spec_validator import validate
 
-# Cross-fixture golden workflow: target -> checker -> machine proposal -> human review.
-fixture=lambda name:json.loads((E/(name+'.json')).read_text(encoding='utf-8'))
-turn=fixture('AdapterTurnResponse'); event=fixture('AuditEvent'); check=fixture('CheckResult'); finding=fixture('Finding'); review=fixture('ReviewReceipt'); scenario=fixture('Scenario'); rule=fixture('PolicyRule'); run=fixture('RunCreate'); detail=fixture('RunDetail')
-assert run['scenario_id']==scenario['scenario_id']==finding['scenario_id']
-assert finding['run_id']==check['run_id']==event['run_id']==detail['run_id']
-assert turn['reply_text']==event['data']['target_response']
-assert event['event_type']=='TURN' and check['turn_index']==finding['proposal']['turn_index']==event['turn_index']
-assert rule['forbidden_value'] in turn['reply_text'] and rule['rule_id']==check['rule_id']==finding['rule_id']
-assert event['event_id'] in check['evidence_event_ids'] and event['event_id'] in finding['proposal']['evidence_event_ids']
-assert check['result']=='FAIL' and finding['proposal']['verdict']=='FAIL' and finding['reviewer_status']=='PENDING'
-assert review['finding_id']==finding['finding_id'] and review['decision']=='CONFIRMED'
-print('PASS: Golden cross-fixture link and canary chain are consistent')
+if __package__ in {None, ""}:
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-for name in ['AuditEvent_STATE','AuditEvent_DECISION','AuditEvent_CHECK','AuditEvent_ERROR','NextProbe_STOP']:
- main=name.split('_')[0] if name.startswith('AuditEvent') else 'NextProbe'
- validator=Draft202012Validator(schemas[main], registry=registry, format_checker=FormatChecker())
- assert validator.is_valid(json.loads((E/(name+'.json')).read_text(encoding='utf-8'))), name
-print('PASS: Additional typed event payload fixtures + STOP probe')
+from scripts.contracts import ROOT, ContractError, Contracts
 
-# Contract tool specs and mock target modes have their own validators.
-from jsonschema import Draft202012Validator as V
-tools_spec=json.loads((ROOT/'contracts/agent_tools.json').read_text(encoding='utf-8'))
-assert [t['name'] for t in tools_spec['tools']]==['load_policy','send_turn','check_evidence']
-for tool in tools_spec['tools']:
- V.check_schema(tool['arguments_schema'])
- assert tool['arguments_schema']['additionalProperties'] is False
-mocks=json.loads((ROOT/'contracts/mock_target_modes.json').read_text(encoding='utf-8'))
-for mode in ['refusal','canary_disclosure','scoring']:
- assert V(schemas['AdapterTurnResponse'],registry=registry).is_valid(mocks[mode]),mode
-assert V(schemas['ErrorResponse'],registry=registry).is_valid(mocks['timeout'])
-assert not V(schemas['AdapterTurnResponse'],registry=registry).is_valid(mocks['malformed'])
-assert not V(schemas['NextProbe'],registry=registry).is_valid({'action':'STOP','strategy_id':'s','message':'illegal','observed_fact':'x','decision_reason':'x','hypothesis':'x'})
-print('PASS: Agent tool allowlist and mock target modes including negative tests')
+TOOL_NAMES = ["load_policy", "send_turn", "check_evidence"]
+
+
+def require(condition, message):
+    if not condition:
+        raise ContractError(message)
+
+
+def rejected(contracts, name, value):
+    try:
+        contracts.validate(name, value)
+    except ContractError:
+        return
+    raise ContractError(f"Negative case unexpectedly accepted: {name}")
+
+
+def validate_repository(root=ROOT):
+    contracts = Contracts(root)
+    for schema in contracts.schemas.values():
+        contracts.check_references(schema, schema["$id"])
+    count = 0
+    for path in sorted((contracts.base / "examples").glob("*.json")):
+        name = path.stem
+        schema_name = name.split("_", 1)[0]
+        require(schema_name in contracts.schemas, f"Orphan example: {name}")
+        contracts.validate(schema_name, contracts.fixture(name))
+        count += 1
+    for name in contracts.schemas:
+        require((contracts.base / "examples" / f"{name}.json").is_file(), f"Missing {name}")
+    api_path = contracts.base / "openapi.yaml"
+    api = yaml.safe_load(api_path.read_text(encoding="utf-8"))
+    contracts.check_references(api, api_path.as_uri())
+    validate(api, base_uri=api_path.as_uri())
+    require(api["openapi"] == "3.1.0", "Unexpected OpenAPI version")
+    operations = [op for methods in api["paths"].values() for op in methods.values()]
+    ids = [op["operationId"] for op in operations]
+    require(len(ids) == len(set(ids)), "Duplicate operationId")
+    for path in ("/api/v1/runs", "/api/v1/batches", "/api/v1/retests"):
+        require("202" in api["paths"][path]["post"]["responses"], "Queue must return 202")
+    tools = json.loads((contracts.base / "agent_tools.json").read_text(encoding="utf-8"))
+    require([tool["name"] for tool in tools["tools"]] == TOOL_NAMES, "Tool allowlist drift")
+    contracts.check_references(tools, (contracts.base / "agent_tools.json").as_uri())
+    for tool in tools["tools"]:
+        for key in ("arguments_schema", "output_schema"):
+            Draft202012Validator.check_schema(tool[key])
+        require(tool["arguments_schema"]["additionalProperties"] is False, "Open tool input")
+        sample = {"rule_ids": ["POL-SEC-01-CANARY"]}
+        if tool["name"] == "send_turn":
+            sample = {"message": "اختبار اصطناعي", "strategy_id": "direct_request"}
+        contracts.validate_schema(tool["arguments_schema"], sample)
+        try:
+            contracts.validate_schema(tool["arguments_schema"], {**sample, "run_id": "injected"})
+        except ContractError:
+            pass
+        else:
+            raise ContractError("Tool accepted controller-owned fields")
+        output = {
+            "load_policy": [contracts.fixture("PolicyRulePublic")],
+            "send_turn": contracts.fixture("AdapterTurnResponse"),
+            "check_evidence": [contracts.fixture("CheckResult")],
+        }[tool["name"]]
+        contracts.validate_schema(tool["output_schema"], output)
+    modes = json.loads((contracts.base / "mock_target_modes.json").read_text(encoding="utf-8"))
+    for mode in ("refusal", "canary_disclosure", "scoring"):
+        contracts.validate("AdapterTurnResponse", modes[mode])
+    contracts.validate("ErrorResponse", modes["timeout"])
+    rejected(contracts, "AdapterTurnResponse", modes["malformed"])
+    stop = contracts.fixture("NextProbe_STOP")
+    rejected(contracts, "NextProbe", {**stop, "message": "illegal"})
+    rejected(
+        contracts,
+        "RunCreate",
+        {**contracts.fixture("RunCreate"), "target_version": "https://invalid"},
+    )
+    for name, schema in contracts.schemas.items():
+        if schema.get("additionalProperties") is False:
+            rejected(contracts, name, {**contracts.fixture(name), "unexpected_field": True})
+    event = contracts.fixture("AuditEvent")
+    rejected(contracts, "AuditEvent", {**event, "occurred_at": "yesterday"})
+    invalid = copy.deepcopy(event)
+    invalid["data"] = {"code": "INVALID", "message": "wrong payload type"}
+    rejected(contracts, "AuditEvent", invalid)
+    validate_golden(contracts)
+    print(
+        f"PASS: {len(contracts.schemas)} schemas, {count} examples, {len(api['paths'])} API paths"
+    )
+    print("PASS: local references, OpenAPI, tool inputs/outputs, negative cases and fixture chain")
+    print("NOTE: fixture validation does not establish runtime integration or human approval")
+
+
+def validate_golden(contracts):
+    f = contracts.fixture
+    turn, event, check, finding = (
+        f(n) for n in ("AdapterTurnResponse", "AuditEvent", "CheckResult", "Finding")
+    )
+    run, detail, scenario, rule, review = (
+        f(n) for n in ("RunCreate", "RunDetail", "Scenario", "PolicyRule", "ReviewReceipt")
+    )
+    require(
+        run["scenario_id"] == scenario["scenario_id"] == finding["scenario_id"], "Scenario links"
+    )
+    require(
+        finding["run_id"] == check["run_id"] == event["run_id"] == detail["run_id"], "Run links"
+    )
+    require(turn["reply_text"] == event["data"]["target_response"], "Reply link")
+    require(event["event_type"] == "TURN", "Golden target event")
+    require(
+        check["turn_index"] == finding["proposal"]["turn_index"] == event["turn_index"],
+        "Turn links",
+    )
+    require(rule["forbidden_value"] in turn["reply_text"], "Synthetic canary chain")
+    require(rule["rule_id"] == check["rule_id"] == finding["rule_id"], "Rule links")
+    for evidence in (check, finding["proposal"]):
+        require(event["event_id"] in evidence["evidence_event_ids"], "Evidence links")
+    require(check["result"] == finding["proposal"]["verdict"] == "FAIL", "Machine proposal")
+    require(finding["reviewer_status"] == "PENDING", "Machine cannot confirm")
+    require(
+        review["finding_id"] == finding["finding_id"] and review["decision"] == "CONFIRMED",
+        "Separate review fixture",
+    )
+
+
+if __name__ == "__main__":
+    try:
+        validate_repository()
+    except (ContractError, ValueError, KeyError) as exc:
+        print(f"FAIL: {exc}", file=sys.stderr)
+        raise SystemExit(1) from exc

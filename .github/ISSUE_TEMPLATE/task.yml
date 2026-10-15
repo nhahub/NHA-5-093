@@ -1,0 +1,29 @@
+name: Owned implementation task
+description: A bounded task with contracts and verifiable acceptance evidence
+body:
+  - type: input
+    id: owner
+    attributes:
+      label: Owner role and branch
+      placeholder: M2 — feat/m2-task-name
+    validations:
+      required: true
+  - type: textarea
+    id: requirements
+    attributes:
+      label: Ticket, FR/AC references and approved contracts
+      description: Link sources; mark unavailable originals as pending.
+    validations:
+      required: true
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies and permitted paths
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance tests and evidence
+    validations:
+      required: true
