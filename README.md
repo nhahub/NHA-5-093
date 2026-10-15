@@ -17,13 +17,17 @@ See [team handoffs](docs/decisions/handoffs.md),
 [installation and operations](docs/decisions/operations.md),
 [decisions and contract audit](docs/decisions/M1-foundation.md), and
 [acceptance ledger](docs/decisions/acceptance.md).
+The original PRDs and master specification are now retained unchanged in
+[the source manifest](docs/decisions/source-manifest.json), with a
+[54-row requirement map](docs/decisions/requirements-traceability.csv) and
+[source reconciliation](docs/decisions/source-reconciliation.md).
 
 **Purpose:** This package accompanies `HireGuard_Master_Coding_Specification.pdf`. It contains machine-checkable schemas, canonical mock payloads, the API specification, precise task ownership, and assistant instructions. This is a build contract proposal, NOT implementation code and NOT a guarantee of error-free AI coding.
 
 **First-time usage:**
 1. Read `docs/ADR-001-approvals.md`. M1 must approve unresolved architecture and requirement changes with the team/mentor.
 2. Run the locked setup and validator commands above. Expect PASS with 30 schemas, 35 examples and 12 API paths.
-3. Owners add their modules to this repository using the paths in `AGENTS.md` and the team handoff protocol. The original PDF still needs to be recovered for FR/AC reconciliation.
+3. Owners add their modules using the paths in `AGENTS.md` and the team handoff protocol. Review the recovered original sources and unresolved differences before claiming FR/AC acceptance.
 4. M1 protects `main`, creates branches and publishes contract tag `contracts-v1.0.0` only once ADR is approved.
 5. Every member gives their coding assistant: `AGENTS.md` + relevant `agents/MN-*.md` + approved ADR + relevant contract schemas + relevant fixture examples + assigned GitHub Issue.
 6. Every coding assistant writes and runs unit/contract tests and opens a short-lived feature PR; another member reviews. Never merge solely because generated code looks plausible.

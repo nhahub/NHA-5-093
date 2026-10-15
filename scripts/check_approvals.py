@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import sys
 from pathlib import Path
 
@@ -13,6 +14,25 @@ if __package__ in {None, ""}:
 from scripts.github_api import REPO, GitHub, GitHubError
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def branch_errors(ref, author, team):
+    match = re.fullmatch(r"feat/m([1-6])-[a-z0-9]+(?:-[a-z0-9]+)*", ref)
+    if not match:
+        return ["Branch must follow feat/mN-task-name"]
+    role = next(
+        (
+            role
+            for role, person in team.items()
+            if (person["github"] or "").lower() == author.lower()
+        ),
+        None,
+    )
+    if role is None:
+        return ["PR author needs an actual team role assignment before merge"]
+    if role != f"M{match[1]}":
+        return ["Feature branch role must match its author's assigned role"]
+    return []
 
 
 def owner(path):
@@ -115,6 +135,7 @@ def main():
         if permission["permission"] in {"admin", "write", "maintain"}:
             writers.add(login)
     errors = review_errors(files, pr["user"]["login"], pr["head"]["sha"], reviews, team, writers)
+    errors.extend(branch_errors(pr["head"]["ref"], pr["user"]["login"], team))
     if api.request("GET", base)["head"]["sha"] != pr["head"]["sha"]:
         raise GitHubError("Head changed while checking approvals; rerun on the current head")
     api.request(

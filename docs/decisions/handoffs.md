@@ -5,6 +5,11 @@ and unit tests within the owned paths in AGENTS.md. Each member creates a fresh
 `feat/mN-task-name` branch from current main and opens an incremental PR. No member
 changes another module merely to fix an integration error.
 
+All members read the same recovered sources listed in source-manifest.json and
+the source-reconciliation record before implementing their mapped FR/NFR/AC
+requirements. Unresolved source differences go to M1 and affected owners; they
+do not authorize independent schema/endpoint changes.
+
 | Owner | Deliver first | Later acceptance |
 |---|---|---|
 | M2 | Fixed runner using central AgentRunner Protocol; fake observation provider | Adaptive traces, budgets, injection defense, cancellation, per-run isolation |
@@ -12,6 +17,11 @@ changes another module merely to fix an integration error.
 | M4 | Exact target-only canary checker; benign and inconclusive tests | Mitigation regression and evidence-linked review samples |
 | M5 | Approved DEV/DEMO scenario/persona and repository; metrics fixtures | Split-safe datasets, frozen experiment ledger and reproducible analyses |
 | M6 | Dashboard fixture views; run creation and Arabic timeline | Live monitor, review/retest/report/export and browser/RTL tests |
+
+Role-specific initial handoffs are tracked in issues #11 (M2), #12 (M3), #13 (M4),
+#14 (M5) and #15 (M6). These assign responsibilities to roles; actual people and
+backups still need to be entered. Feature branch prefixes must match the author's
+actual member assignment before merge.
 
 Each handoff PR provides:
 

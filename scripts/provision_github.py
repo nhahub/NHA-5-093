@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import csv
 import json
 import sys
 from pathlib import Path
@@ -38,6 +39,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--backlog", action="store_true")
     parser.add_argument("--protect", action="store_true")
+    parser.add_argument("--handoffs", action="store_true")
     args = parser.parse_args()
     api = GitHub()
     base = f"/repos/{REPO}"
@@ -73,7 +75,7 @@ def main():
                     ("Evidence", "evidence"),
                 )
             )
-            body += "\n\nBranch: `feat/m1-task-name`. M2-M6 implement their own modules. Original FR/AC mapping is pending source recovery. No approvals or completion are implied by this issue."
+            body += "\n\nBranch: `feat/m1-task-name`. M2-M6 implement their own modules. Original source copies and the 54-row FR/NFR/AC map are available under docs/decisions; differences still need owner acknowledgment. No approvals or completion are implied by this issue."
             if title not in issues:
                 issue = api.request(
                     "POST",
@@ -124,6 +126,35 @@ def main():
             "VERIFIED: main protection; required checks: "
             + ", ".join(actual["required_status_checks"]["contexts"])
         )
+    if args.handoffs:
+        milestones = api.pages(base + "/milestones?state=all")
+        milestone = next(item for item in milestones if item["title"].startswith("M1-05:"))
+        issues = {
+            item["title"]: item
+            for item in api.pages(base + "/issues?state=all")
+            if "pull_request" not in item
+        }
+        with (ROOT / "docs/decisions/requirements-traceability.csv").open(
+            encoding="utf-8", newline=""
+        ) as stream:
+            trace = list(csv.DictReader(stream))
+        tasks = json.loads((ROOT / "infra/owner-issues.json").read_text(encoding="utf-8"))
+        for task in tasks:
+            title = f"{task['role']}: {task['title']}"
+            mapped = ", ".join(
+                row["requirement_id"]
+                for row in trace
+                if row["primary_owner_proposed"] == task["role"]
+            )
+            body = f"Role: {task['role']}. Actual GitHub assignee and backup are pending; do not invent them.\n\nOwned paths: `{task['path']}`. No other module may be changed without M1 and owner agreement.\n\nFirst handoff: {task['first']}\n\nAcceptance tests: {task['tests']}\n\nDependencies: {task['dependencies']}\n\nSource requirements proposed for this role: {mapped}. Read docs/decisions/source-manifest.json, requirements-traceability.csv and source-reconciliation.md. These are proposed primary responsibilities; producer/consumer boundaries and directory ownership remain authoritative.\n\nPublish a small feature PR from main, package manifest, fixture/model contract tests and exact startup/test argument arrays. M1 registers the approved handoff and shared locks; do not independently change contracts, root tooling or another owner's files. Initial integration gate M1-05; later acceptance follows M1-06..08."
+            issue = issues.get(title)
+            if not issue:
+                issue = api.request(
+                    "POST",
+                    base + "/issues",
+                    {"title": title, "body": body, "milestone": milestone["number"]},
+                )
+            print(f"HANDOFF: {task['role']} {issue['html_url']}")
     return 0
 
 

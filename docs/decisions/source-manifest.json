@@ -1,0 +1,25 @@
+[
+  {
+    "id": "PRD-DOCX",
+    "path": "docs/decisions/sources/HireGuard_PRD_and_Team_Plan_EN.docx",
+    "sha256": "ab6378d367538634c8a8d1e0d9f0e3e86f5019c348d2fc18a6b577fadd1a4482",
+    "status": "Original detailed PRD; 2 October 2026; eight-week source",
+    "recovered_on": "2026-10-15"
+  },
+  {
+    "id": "PRD-PDF",
+    "path": "docs/decisions/sources/HireGuard — PRD & Architecture Blueprint.pdf",
+    "sha256": "96ae55aeaff0b246db91370861654398cec5f5ad54a28d42e1944ae92577e0c8",
+    "status": "Original architecture blueprint; 3 October 2026; eight-week source",
+    "recovered_on": "2026-10-15",
+    "pages": 8
+  },
+  {
+    "id": "MASTER-PDF",
+    "path": "docs/decisions/sources/HireGuard_Master_Coding_Specification.pdf",
+    "sha256": "ef035a8c09864415a4cde60831c7306e47a6def985a6f219312b82f77dbe0755",
+    "status": "10 October 2026 implementation proposal; explicit lead/mentor approval required",
+    "recovered_on": "2026-10-15",
+    "pages": 41
+  }
+]

@@ -4,8 +4,9 @@ Status: tooling selected by M1's implementation request; application ADR decisio
 
 M1 is WalidAbdelmeguid. M2-M6 identities and all backups are unassigned in
 `infra/team.json`; no names or acknowledgments are inferred. The original PRDs
-and master specification are absent from this checkout. Recover them before
-claiming FR/AC coverage or freezing the contract baseline.
+and master specification have now been recovered unchanged into `sources/` with
+SHA-256 provenance. See source-reconciliation.md and the 54-row traceability map.
+Source differences and owner acknowledgments still prevent contract freeze.
 
 ## Tooling
 

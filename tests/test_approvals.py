@@ -1,6 +1,13 @@
-from scripts.check_approvals import owner, review_errors
+from scripts.check_approvals import branch_errors, owner, review_errors
 
 TEAM = {f"M{i}": {"github": f"member{i}"} for i in range(1, 7)}
+
+
+def test_branches_follow_assigned_member_and_cannot_impersonate_another_role():
+    assert not branch_errors("feat/m2-fixed-runner", "member2", TEAM)
+    assert branch_errors("feat/m3-fixed-runner", "member2", TEAM)
+    assert branch_errors("main", "member1", TEAM)
+    assert branch_errors("feat/m2-fixed-runner", "unassigned", TEAM)
 
 
 def review(login, state="APPROVED", sha="head", identifier=1):

@@ -6,7 +6,7 @@ Individual tooling tests do not satisfy an application milestone.
 
 | Gate | Current state | Required evidence |
 |---|---|---|
-| M1-01 sources/approvals | PENDING | Original sources, complete per-FR/AC mapping, actual handles/backups, actual signatures |
+| M1-01 sources/approvals | Sources recovered and FR/NFR/AC map prepared; approvals PENDING | Source hashes and exact rows available; actual handles/backups, owner reconciliation and signatures still required |
 | M1-02 freeze | PENDING | Contract audit, affected-owner decisions, consumer tests, approved tag |
 | M1-03 tooling | Foundation implemented; review pending | Locked setup, Windows/Linux CI, fresh-clone smoke, owner manifests |
 | M1-04 governance | Configuration prepared; server verification recorded separately | Protection readback, required CI, actual team assignment and independent review |

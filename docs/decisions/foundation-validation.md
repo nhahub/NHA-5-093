@@ -8,7 +8,7 @@ Node 24.15.0 / npm 11.12.1. This record covers M1 tooling only.
 | `uv sync --locked --all-packages` | Locked environment installed |
 | `npm ci --ignore-scripts` | Clean root workspace install; no application package yet |
 | `uv run --locked python scripts/validate_contracts.py` | PASS: 30 schemas, all 35 examples, 12 paths; references/tool outputs/negative cases/golden fixture chain |
-| `uv run --locked python -m pytest tests -q` | 39 passed |
+| `uv run --locked python -m pytest tests -q` | 42 passed |
 | `uv run --locked python -m ruff check .` | Passed |
 | `uv run --locked python -m ruff format --check .` | Passed |
 | `actionlint 1.7.7` | All three workflow files passed static validation |
@@ -19,7 +19,9 @@ Node 24.15.0 / npm 11.12.1. This record covers M1 tooling only.
 
 Actionlint and Gitleaks executables were downloaded from their official release
 assets, checked against published SHA-256 checksums and stored in ignored .tools.
-Tests of the API smoke use existing contract fixtures and HTTPX MockTransport;
+Recovered source hashes and all 54 traceability rows were validated against the
+original source bytes/OOXML, and extracted source text passed Gitleaks. Tests of
+the API smoke use existing contract fixtures and HTTPX MockTransport;
 they are harness tests, not evidence of a real application, real model or human
 adjudication. SQLite tests exercise an actual local WAL database and verify that
 snapshots preserve committed data and refuse overwriting existing files.
@@ -32,8 +34,9 @@ snapshots preserve committed data and refuse overwriting existing files.
 - Docker build/runtime: Docker is not installed on the current host and the
   images intentionally require the real owner modules.
 - Linux execution: delegated to the PR's hosted CI, not inferred from Windows.
-- Source FR/AC coverage, contract freeze, final model/evaluation evidence, second
-  laptop and two rehearsals: pending real inputs and recorded human evidence.
+- Original source copies and the 54-row FR/NFR/AC mapping have been recovered and
+  verified; source differences still need owner acknowledgment. Contract freeze,
+  final model/evaluation evidence, second laptop and two rehearsals remain pending.
 - Independent cross-owner review: required on the PR; no approval fabricated.
 
 No canonical transport schema, endpoint, enum, internal Protocol or original

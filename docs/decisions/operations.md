@@ -98,7 +98,8 @@ down` preserves the volume; `down -v` destroys it and is not part of this runboo
 
 ## Release and second laptop checklist
 
-- Recover original FR/AC sources and close traceability gaps.
+- Review the recovered source manifest and FR/NFR/AC mapping; obtain owner and
+  mentor decisions on differences in source-reconciliation.md.
 - Record actual owner/mentor decisions; freeze approved contract tag.
 - Pass module, contract, runtime, browser, reliability and Compose suites.
 - Freeze local model versions/settings, policies, split manifests and seeds before
