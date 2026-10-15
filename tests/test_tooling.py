@@ -4,13 +4,19 @@ import tomllib
 import pytest
 import yaml
 
+from scripts import dev
 from scripts.contracts import ROOT
 from scripts.dev import handoff
 from scripts.readiness import missing_handoffs
 
 
-def test_missing_modules_are_pending_not_successful():
-    assert missing_handoffs()
+def test_missing_modules_are_pending_not_successful(tmp_path, monkeypatch):
+    (tmp_path / "infra").mkdir()
+    (tmp_path / "infra/handoffs.json").write_text(
+        json.dumps({"M3": {"path": "services/api", "test": None, "start": None}}), encoding="utf-8"
+    )
+    monkeypatch.setattr(dev, "ROOT", tmp_path)
+    assert missing_handoffs(tmp_path)
     with pytest.raises(RuntimeError, match="PENDING"):
         handoff("M3", "start")
 

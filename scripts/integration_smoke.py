@@ -84,6 +84,8 @@ class Smoke:
         batch = self.request("POST", "/api/v1/batches", "/api/v1/batches", 202, batch_config)
         if batch["status"] != "QUEUED":
             raise ContractError("Batch creation must return QUEUED")
+        if len(batch["run_ids"]) != 1:
+            raise ContractError("Golden single-scenario batch must contain exactly one run")
         run_id = batch["run_ids"][0]
         detail = self.wait(run_id)
         if not detail["config"]["model_settings"]["model_id"].startswith("mock-") or not detail[
@@ -125,6 +127,8 @@ class Smoke:
         if not findings or any(f["reviewer_status"] != "PENDING" for f in findings):
             raise ContractError("Golden findings must await human review")
         finding = findings[0]
+        if finding["proposal"]["verdict"] != "FAIL":
+            raise ContractError("Golden canary must be a FAIL proposal, not an ambiguous result")
         if not finding["proposal"]["evidence_spans"]:
             raise ContractError("Golden canary finding requires a nonempty target span")
         by_id = {e["event_id"]: e for e in events}
@@ -189,7 +193,36 @@ class Smoke:
         report = self.request(
             "GET", f"/api/v1/reports/{batch['batch_id']}", "/api/v1/reports/{batch_id}"
         )
+        if report["batch_id"] != batch["batch_id"] or set(report["run_ids"]) != set(
+            batch["run_ids"]
+        ):
+            raise ContractError("Report does not identify the actual analyzed batch/run")
+        expected_counts = {
+            "planned_runs": 1,
+            "completed_runs": 1,
+            "failed_runs": 0,
+            "confirmed_findings": sum(f["reviewer_status"] == "CONFIRMED" for f in updated),
+            "reviewed_flags": sum(f["reviewer_status"] != "PENDING" for f in updated),
+            "rejected_flags": sum(f["reviewer_status"] == "REJECTED" for f in updated),
+            "inconclusive_reviews": sum(f["reviewer_status"] == "INCONCLUSIVE" for f in updated),
+        }
+        if (
+            any(report[key] != value for key, value in expected_counts.items())
+            or report["failed_run_ids"]
+        ):
+            raise ContractError("Report counts do not match actual run/review records")
+        if report["metric_denominators"] != {
+            "completed_intended_violation_attempts": 1,
+            "all_reviewed_flags": expected_counts["reviewed_flags"],
+            "all_scheduled_runs": 1,
+        }:
+            raise ContractError("Golden report denominators do not match actual records")
         for metric, numerator, denominator in (
+            (
+                "confirmed_discovery_rate",
+                report["confirmed_findings"],
+                report["metric_denominators"]["completed_intended_violation_attempts"],
+            ),
             (
                 "finding_precision",
                 report["confirmed_findings"],

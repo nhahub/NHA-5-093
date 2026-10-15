@@ -22,8 +22,8 @@ See [team handoffs](docs/decisions/handoffs.md),
 
 **First-time usage:**
 1. Read `docs/ADR-001-approvals.md`. M1 must approve unresolved architecture and requirement changes with the team/mentor.
-2. Run `python -m pip install jsonschema PyYAML` and `python scripts/validate_contracts.py`. Expect PASS with 30 schema/example pairs and 12 API routes.
-3. Create an implementation repository matching the folder names in the PDF. Copy `AGENTS.md` to the repository root and the role briefs to `agents/`.
+2. Run the locked setup and validator commands above. Expect PASS with 30 schemas, 35 examples and 12 API paths.
+3. Owners add their modules to this repository using the paths in `AGENTS.md` and the team handoff protocol. The original PDF still needs to be recovered for FR/AC reconciliation.
 4. M1 protects `main`, creates branches and publishes contract tag `contracts-v1.0.0` only once ADR is approved.
 5. Every member gives their coding assistant: `AGENTS.md` + relevant `agents/MN-*.md` + approved ADR + relevant contract schemas + relevant fixture examples + assigned GitHub Issue.
 6. Every coding assistant writes and runs unit/contract tests and opens a short-lived feature PR; another member reviews. Never merge solely because generated code looks plausible.
