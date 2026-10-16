@@ -106,7 +106,9 @@ Labels strictly adhere to: `M4-IMPLEMENTED + TESTED`, `M4-HELPER ONLY`, `NOT M4 
 | **AC-04** | >=80% precision on held-out findings | `NOT M4 SCOPE` | Checker quality affects it; overall held-out benchmark evaluation owned by M5 |
 | **AC-06** | one confirmed vulnerability mitigated and verified by replay | `M4-HELPER ONLY` | `test_vulnerable_fails_hardened_passes_mitigation_verified` (mitigation verification logic; end-to-end replay execution is M2/M3) |
 | **ADR-03** | agent tools are load_policy, send_turn, check_evidence | `M4-HELPER ONLY` | `test_agent_tools_json_agreement`, `test_valid_tool_calls` (tool specification and reference validator; controller architecture owned by M2) |
+| **ADR-06** | append-only events; reviewer_status is a read projection | `M4-HELPER ONLY` | `test_retest_guards` (M4 only proposes findings and never writes reviewer_status; retest requires a reviewer-CONFIRMED original) |
 | **ADR-07** | RETEST_INCONCLUSIVE | `UNVERIFIED/BLOCKED` | BLOCKED pending M1 approval (`test_adr07_unapproved_inconclusive_flag` verifies safe default) |
+| **ADR-08** | 120 security runs | `UNVERIFIED/BLOCKED` | BLOCKED pending M1/mentor approval; M4 supplies checkers only, run execution is M5/M2 |
 | **ADR-11** | private values never reach the agent | `M4-IMPLEMENTED + TESTED` | `test_public_view_hides_forbidden_value`, `test_public_rules_leakage_protection`, `test_produced_policy_rule_public_validates_against_schema` |
 
 ---
