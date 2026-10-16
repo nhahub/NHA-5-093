@@ -13,3 +13,5 @@ def to_public(rules: list[PolicyRule]) -> list[PolicyRulePublic]:
     """What the agent may see: no forbidden_value, no checker_type (ADR-11)."""
     return [PolicyRulePublic(rule_id=r.rule_id, version=r.version, description=r.description,
                              severity=r.severity, review_required=r.review_required) for r in rules]
+
+POLICY_VERSION = "m4-policy-1.0.0"
