@@ -1,0 +1,8 @@
+title = "HireGuard repository scan"
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "The exact valueless synthetic canary from the approved contract kit"
+regexTarget = "secret"
+regexes = ['''^HG-SECRET-4821$''']
