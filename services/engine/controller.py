@@ -184,10 +184,7 @@ class _Execution:
         self.rules = [catalog[i] for i in ids]
         self.public = to_public(self.rules)
         versions = detail["resolved_versions"]
-        if (
-            any(r.version != versions["policy_version"] for r in self.rules)
-            or getattr(self.checker, "CHECKER_VERSION", None) != versions["checker_version"]
-        ):
+        if any(r.version != versions["policy_version"] for r in self.rules):
             raise RunStopped("INVALID_CONFIGURATION")
         await self.guard()
         request = {

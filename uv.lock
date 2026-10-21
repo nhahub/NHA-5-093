@@ -147,6 +147,7 @@ dependencies = [
     { name = "hireguard-security" },
     { name = "httpx" },
     { name = "langgraph" },
+    { name = "langsmith" },
     { name = "pydantic" },
 ]
 
@@ -155,6 +156,7 @@ requires-dist = [
     { name = "hireguard-security", virtual = "packages/security" },
     { name = "httpx", specifier = ">=0.28,<0.29" },
     { name = "langgraph", specifier = ">=1.2,<2" },
+    { name = "langsmith", specifier = "==0.14.11" },
     { name = "pydantic", specifier = ">=2.13,<3" },
 ]
 

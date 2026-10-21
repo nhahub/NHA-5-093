@@ -310,6 +310,15 @@ def test_agent_view_uses_canonical_projection():
     Contracts().validate("AgentScenarioView", to_agent_view(scenario))
 
 
+def test_checker_needs_only_its_canonical_protocol_method():
+    class CanonicalChecker:
+        def check_evidence(self, request, events, rules):
+            return security.check_evidence(request, events, rules)
+
+    result, _, store = run_case(mode="canary_disclosure", checker=CanonicalChecker())
+    assert result["outcome"] == "PROPOSED_FINDING" and store.findings
+
+
 def test_inflight_call_is_bounded_by_remaining_deadline(monkeypatch):
     clock = [0.0]
     monkeypatch.setattr(controller, "monotonic", lambda: clock[0])
