@@ -1,0 +1,76 @@
+name: Foundation CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: foundation-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  contracts:
+    name: contracts-${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@94527f2e458b27549849d47d273a16bec83a01e9 # v7
+        with:
+          version: 0.10.10
+          enable-cache: true
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - run: uv sync --locked --all-packages
+      - run: npm ci --ignore-scripts
+      - run: uv run --locked python scripts/validate_contracts.py
+      - run: uv run --locked python -m ruff check .
+      - run: uv run --locked python -m ruff format --check .
+      - run: uv run --locked python -m pytest tests -q
+      - name: Pending capability inventory (not integration evidence)
+        run: uv run --locked python scripts/readiness.py --report-only
+  secrets:
+    name: secrets
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - run: docker run --rm -v "$PWD:/repo" zricethezav/gitleaks:v8.24.2 detect --source=/repo --no-git --config=/repo/.gitleaks.toml --redact --exit-code=1
+  owner-suites:
+    name: available-owner-suites
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@94527f2e458b27549849d47d273a16bec83a01e9 # v7
+        with:
+          version: 0.10.10
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version-file: .node-version
+      - run: uv sync --locked --all-packages
+      - run: npm ci
+      - name: Run present modules; record absent modules as pending
+        run: uv run --locked python scripts/check_modules.py --available
+  quality-gate:
+    name: quality-gate
+    if: always()
+    needs: [contracts, secrets, owner-suites]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require every foundation job
+        env:
+          CONTRACTS: ${{ needs.contracts.result }}
+          SECRETS: ${{ needs.secrets.result }}
+          OWNERS: ${{ needs.owner-suites.result }}
+        run: test "$CONTRACTS" = success && test "$SECRETS" = success && test "$OWNERS" = success

@@ -3,6 +3,7 @@
 !.env.example
 __pycache__/
 .pytest_cache/
+.pytest-tmp/
 .venv/
 node_modules/
 dist/
@@ -12,3 +13,12 @@ dist/
 *.sqlite
 *.log
 coverage/
+.cache/
+.tools/
+.ruff_cache/
+artifacts/
+*.egg-info/
+playwright-report/
+test-results/
+tmp/
+output/

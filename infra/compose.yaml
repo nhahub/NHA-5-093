@@ -1,0 +1,31 @@
+name: hireguard
+services:
+  api:
+    build:
+      context: ..
+      dockerfile: infra/api.Dockerfile
+    environment:
+      HG_PROVIDER_MODE: mock
+      HG_DB_URL: sqlite:////data/hireguard.db
+      HG_ALLOWED_TARGET_VERSIONS: vulnerable-v1,hardened-v1
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - evidence:/data
+    healthcheck:
+      test: ["CMD", "/app/.venv/bin/python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=2)"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+    stop_grace_period: 30s
+  dashboard:
+    build:
+      context: ..
+      dockerfile: infra/dashboard.Dockerfile
+    ports:
+      - "127.0.0.1:5173:8080"
+    depends_on:
+      api:
+        condition: service_healthy
+volumes:
+  evidence:
