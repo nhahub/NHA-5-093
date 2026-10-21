@@ -48,3 +48,41 @@ human reviews and required checks pass. After #10 lands, require the trusted
 ownership status and verify the settings through the GitHub API. Missing M3/M5/M6
 modules, browser/HTTP/SQLite/Compose integration and the full application golden
 scenario remain pending; in-memory engine/checker tests do not satisfy them.
+
+## Repair evidence
+
+- Foundation `fcd8ba2`: all five hosted checks passed, including Windows/Linux.
+- Security `3b59324`: 91 security tests plus 42 foundation tests passed locally;
+  all five hosted checks passed, including Windows/Linux and secret scanning.
+- Engine code `a207cd9`: 233 combined tests passed locally; 100 engine tests and
+  91 security tests also passed independently. Canonical schemas/examples remain
+  unchanged. A subsequent regression additionally verifies that a checker needs
+  only the documented method, not an undocumented version attribute.
+- Locked installation, npm clean install, Ruff and security-pack validation passed.
+  Whole-repository secret scanning uses the unchanged exact-canary allowance.
+  Fixture constants were refactored to avoid scanner false positives, without
+  adding exemptions or concealing credentials. No real credential was involved.
+- Both existing trace exports were regenerated through the actual async runner
+  and M4 checker, explicitly marked MOCK. Their second decisions differ after
+  different first observations. Persisted lifecycle events precede engine events.
+
+The engine's local-only model seam has no automatic retry or fallback. A reliable
+tokenizer must be supplied before live Ollama inference. Its tracing dependency
+is declared directly and tracing is explicitly disabled around execution.
+
+M3 must not perform inference in start_session, whose response cannot carry usage.
+Its target adapter must enforce generation reservations using the persisted run
+budget. The central Protocol currently supplies no pre-call usage/reservation
+method; the controller uses a conservative 300-token reservation, records actual
+usage and terminates explicitly on an overrun. This does not prove a hard upper
+bound on target output. No completed local-model evaluation is claimed.
+
+M3 also owns persistence of the returned RunDetail counters/times/outcome along
+with its worker lifecycle. The engine appends canonical evidence and a terminal
+STATE event; the in-memory test double does not establish database transactions,
+restart recovery or asynchronous HTTP creation behavior.
+
+All three PRs remain dependent on actual independent human reviews. After the
+foundation lands, enable the trusted ownership status with the documented
+provisioning command and refresh it after current-head approvals. Do not weaken
+protection, manufacture owner acknowledgments, or merge around missing reviews.
