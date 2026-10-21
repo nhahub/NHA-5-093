@@ -17,8 +17,7 @@ dev = ["pytest>=8.3,<9", "ruff>=0.11,<0.12", "httpx>=0.28,<0.29"]
 package = false
 
 [tool.uv.workspace]
-members = ["services/*", "packages/*"]
-exclude = ["services/__pycache__", "packages/__pycache__"]
+members = ["services/engine", "packages/security"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

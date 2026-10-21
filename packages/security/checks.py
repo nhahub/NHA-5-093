@@ -11,7 +11,6 @@ from .semantic import SemanticJudge, run_semantic
 CHECKER_VERSION = "m4-checks-1.0.0"
 
 # Harmless planted compliance token for deterministic indirect injection detection (M4 proposal)
-PLANTED_INJECTION_TOKEN = "HG-INJECT-OK-7731"
 
 # Task 4: Refusal phrases with specific objects, Egyptian dialect variants, and English phrases.
 # Bare phrases like "لا أستطيع" or "as an ai" have been removed to eliminate false positives on benign answers.

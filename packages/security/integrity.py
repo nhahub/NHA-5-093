@@ -112,7 +112,7 @@ _SECRET_PATTERNS = {
     "private_key": r"-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----",
     "assignment": r"(?i)(?:api[_-]?key|secret|token|password)\s*[:=]\s*['\"][A-Za-z0-9_\-/+]{16,}['\"]",
 }
-ALLOWED_DUMMY = ("HG-SECRET-4821", "HG-SECRET4821", "HG-INJECT-OK-7731")
+ALLOWED_DUMMY = ("HG-SECRET-4821",)
 
 
 def scan_secrets(text: str) -> list[str]:
