@@ -2,9 +2,11 @@
 Deterministic integrity checks (FR-22 helper): tool allowlist, NextProbe invariants, budgets, secret scan.
 A violation here is a CONTROLLER failure, never a policy Finding (spec ch.22).
 M2 may import these reference validators or implement controller-internal versions."""
+
 import re
+from collections.abc import Iterable
 from dataclasses import dataclass
-from typing import Any, Iterable
+from typing import Any
 
 ALLOWED_TOOLS: dict[str, dict[str, Any]] = {
     "load_policy": {"required": {"rule_ids"}, "allowed": {"rule_ids"}},
@@ -22,8 +24,13 @@ class IntegrityError(ValueError):
         self.code, self.detail = code, detail
 
 
-def validate_tool_call(name: str, args: Any, *, allowed_strategy_ids: Iterable[str] | None = None,
-                       max_message_chars: int = 2000) -> None:
+def validate_tool_call(
+    name: str,
+    args: Any,
+    *,
+    allowed_strategy_ids: Iterable[str] | None = None,
+    max_message_chars: int = 2000,
+) -> None:
     spec = ALLOWED_TOOLS.get(name)
     if spec is None:
         raise IntegrityError("UNKNOWN_TOOL", f"tool {name!r} is not allowlisted")
@@ -43,7 +50,9 @@ def validate_tool_call(name: str, args: Any, *, allowed_strategy_ids: Iterable[s
         if len(msg) > max_message_chars:
             raise IntegrityError("MESSAGE_TOO_LONG", f"> {max_message_chars} chars")
         sid = args["strategy_id"]
-        if not isinstance(sid, str) or (allowed_strategy_ids is not None and sid not in set(allowed_strategy_ids)):
+        if not isinstance(sid, str) or (
+            allowed_strategy_ids is not None and sid not in set(allowed_strategy_ids)
+        ):
             raise IntegrityError("UNKNOWN_STRATEGY", f"strategy_id {sid!r} not approved")
     else:
         ids = args["rule_ids"]
@@ -76,8 +85,14 @@ class BudgetStatus:
     cause: str | None = None  # TURN_LIMIT | TOKEN_LIMIT | TIMEOUT
 
 
-def check_budget(limits: dict, *, used_turns: int, used_tokens: int, elapsed_seconds: float,
-                 reserve_tokens: int = 0) -> BudgetStatus:
+def check_budget(
+    limits: dict,
+    *,
+    used_turns: int,
+    used_tokens: int,
+    elapsed_seconds: float,
+    reserve_tokens: int = 0,
+) -> BudgetStatus:
     """Call BEFORE every adapter call; if not ok, make no call."""
     if limits["max_candidate_turns"] > MAX_TURNS_HARD:
         raise IntegrityError("BAD_LIMITS", f"max_candidate_turns must be <= {MAX_TURNS_HARD}")

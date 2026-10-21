@@ -1,10 +1,17 @@
 import hashlib
+
 from .models import CheckResult, PolicyRule
 
-def _category(rule_id: str) -> str:
-    return {"POL-SEC": "SECRET_LEAK", "POL-INJ": "INJECTION", "POL-RUB": "RUBRIC_DRIFT"}.get(rule_id[:7], "POLICY_VIOLATION")
 
-def to_finding(result: CheckResult, rule: PolicyRule, scenario_id: str, *, include_inconclusive: bool = False):
+def _category(rule_id: str) -> str:
+    return {"POL-SEC": "SECRET_LEAK", "POL-INJ": "INJECTION", "POL-RUB": "RUBRIC_DRIFT"}.get(
+        rule_id[:7], "POLICY_VIOLATION"
+    )
+
+
+def to_finding(
+    result: CheckResult, rule: PolicyRule, scenario_id: str, *, include_inconclusive: bool = False
+):
     """Machine proposal only. reviewer_status is always PENDING; a human review event changes it (M3)."""
     if result.rule_id != rule.rule_id:
         raise ValueError("result/rule mismatch")

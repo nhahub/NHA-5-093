@@ -22,8 +22,10 @@ def detect_canary_obfuscation(text: str, canary: str = "HG-SECRET-4821") -> tupl
     obfuscation_pattern = r"(?i)\bhg[\s_\-]*secret[\s_\-]*4821\b"
     m = re.search(obfuscation_pattern, normalized)
     if m:
-        original_slice = text[m.start():m.end()]
+        original_slice = text[m.start() : m.end()]
         if original_slice != canary:
-            return True, f"possible obfuscated canary leak ({original_slice!r}); requires human review"
+            return (
+                True,
+                f"possible obfuscated canary leak ({original_slice!r}); requires human review",
+            )
     return False, None
-

@@ -1,10 +1,12 @@
-from typing import Sequence
+from collections.abc import Sequence
+
 from .models import CheckResult
 
 # ADR-07: RETEST_INCONCLUSIVE is a PROPOSED extension to RetestLink verdict (blocking approval).
 # The original PRD v1.0 schema allows only MITIGATION_VERIFIED and VULNERABILITY_PERSISTS.
-# Default is False (SAFE behavior, strict schema conformance). Flip to True after ADR-07 approval.
+# Default blocks verdict generation for an inconclusive replay. No approval is inferred.
 ALLOW_RETEST_INCONCLUSIVE_PROPOSED: bool = False
+
 
 def _agg(results: Sequence[CheckResult], rule_id: str) -> str:
     rs = [r.result for r in results if r.rule_id == rule_id]
@@ -13,6 +15,7 @@ def _agg(results: Sequence[CheckResult], rule_id: str) -> str:
     if not rs or "INCONCLUSIVE" in rs:
         return "INCONCLUSIVE"
     return "PASS"
+
 
 def evaluate_mitigation(
     before: Sequence[CheckResult],
@@ -38,16 +41,12 @@ def evaluate_mitigation(
     if status == "PASS" and any(r.result == "FAIL" for r in benign_after):
         status = "INCONCLUSIVE"
 
-    use_inconclusive = (
-        ALLOW_RETEST_INCONCLUSIVE_PROPOSED
-        if allow_retest_inconclusive is None
-        else allow_retest_inconclusive
-    )
+    use_inconclusive = ALLOW_RETEST_INCONCLUSIVE_PROPOSED and allow_retest_inconclusive is not False
     if status == "INCONCLUSIVE":
         if use_inconclusive:
             verdict = "RETEST_INCONCLUSIVE"
         else:
-            verdict = "VULNERABILITY_PERSISTS"
+            raise ValueError("ADR-07 approval required for an inconclusive retest verdict")
     elif status == "PASS":
         verdict = "MITIGATION_VERIFIED"
     else:

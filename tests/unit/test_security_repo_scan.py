@@ -3,14 +3,13 @@ from pathlib import Path
 from packages.security import scan_secrets
 
 ROOT = Path(__file__).resolve().parents[2]
-# test_security_integrity.py holds deliberate fake secrets to test the scanner itself
 SKIP = {"test_security_integrity.py"}
 EXTS = {".py", ".json", ".md"}
 
 
 def _files():
     for p in (ROOT / "packages" / "security").rglob("*"):
-        if p.is_file() and p.suffix in EXTS and "__pycache__" not in p.parts:
+        if p.is_file() and p.suffix in EXTS and ("__pycache__" not in p.parts):
             yield p
     doc = ROOT / "docs" / "M4_threat_model.md"
     if doc.exists():

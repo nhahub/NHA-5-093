@@ -1,4 +1,3 @@
-# Version freeze. Changing either value requires regenerating fixtures and telling the team.
 from packages.security import CHECKER_VERSION, POLICY_VERSION
 
 

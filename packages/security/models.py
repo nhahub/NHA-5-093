@@ -1,17 +1,22 @@
 # Local mirrors of contracts/schemas/*.schema.json (M1 owns the truth).
 from __future__ import annotations
+
 from typing import Any, Literal
-from pydantic import BaseModel, ConfigDict, Field
+
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 Result = Literal["PASS", "FAIL", "INCONCLUSIVE"]
 
+
 class _Strict(BaseModel):
     model_config = ConfigDict(extra="forbid")
+
 
 class CheckRequest(_Strict):
     run_id: str
     turn_index: int = Field(..., ge=1, le=6)
     rule_ids: list[str] = Field(..., min_length=1)
+
 
 class AuditEvent(_Strict):
     event_id: str = Field(..., pattern=r"^evt_[a-f0-9]{12}$")
@@ -22,6 +27,7 @@ class AuditEvent(_Strict):
     turn_index: int = Field(..., ge=0)
     occurred_at: str
     data: dict[str, Any]
+
 
 class PolicyRule(_Strict):
     rule_id: str = Field(..., pattern=r"^POL-[A-Z]+-[0-9]{2}-[A-Z0-9-]+$")
@@ -34,11 +40,10 @@ class PolicyRule(_Strict):
         "SEMANTIC",
         "SCORING_DRIFT",
         "BENIGN_CONTROL",
-        "CANARY_EXACT",
-        "REGEX",
     ]
     forbidden_value: str | None = None
     review_required: bool = True
+
 
 class PolicyRulePublic(_Strict):
     rule_id: str = Field(..., pattern=r"^POL-[A-Z]+-[0-9]{2}-[A-Z0-9-]+$")
@@ -46,6 +51,7 @@ class PolicyRulePublic(_Strict):
     description: str
     severity: Literal["LOW", "MEDIUM", "HIGH", "CRITICAL"]
     review_required: bool = True
+
 
 class CheckResult(_Strict):
     check_id: str
@@ -58,12 +64,14 @@ class CheckResult(_Strict):
     checker_version: str
     reason: str
 
+
 class FindingProposal(_Strict):
     verdict: Literal["FAIL", "INCONCLUSIVE"]
     turn_index: int = Field(..., ge=1, le=6)
     evidence_event_ids: list[str] = Field(..., min_length=1)
     evidence_spans: list[str] = Field(default_factory=list)
     reason: str
+
 
 class Finding(_Strict):
     finding_id: str = Field(..., pattern=r"^fnd_[a-f0-9]{8}$")
@@ -74,6 +82,7 @@ class Finding(_Strict):
     severity: Literal["LOW", "MEDIUM", "HIGH", "CRITICAL"]
     proposal: FindingProposal
     reviewer_status: Literal["PENDING", "CONFIRMED", "REJECTED", "INCONCLUSIVE"]
+
 
 class Scenario(_Strict):
     scenario_id: str = Field(..., pattern=r"^scn_[a-z0-9_]+$")
@@ -97,6 +106,7 @@ class Scenario(_Strict):
     approved: bool
     seed: int = Field(..., ge=0)
 
+
 class RetestResult(_Strict):
     retest_id: str
     original_run_id: str
@@ -106,6 +116,7 @@ class RetestResult(_Strict):
     status_after: Literal["PASS", "FAIL", "INCONCLUSIVE"]
     verdict: Literal["MITIGATION_VERIFIED", "VULNERABILITY_PERSISTS", "RETEST_INCONCLUSIVE"]
 
+
 class NextProbeModel(_Strict):
     action: Literal["SEND_TURN", "STOP"]
     strategy_id: str
@@ -114,9 +125,21 @@ class NextProbeModel(_Strict):
     decision_reason: str
     hypothesis: str
 
+    @model_validator(mode="after")
+    def action_message(self):
+        if self.action == "STOP" and self.message is not None:
+            raise ValueError("STOP requires null message")
+        if self.action == "SEND_TURN" and not self.message:
+            raise ValueError("SEND_TURN requires nonempty message")
+        if not self.strategy_id:
+            raise ValueError("strategy_id requires a value")
+        return self
+
+
 class ScoreResultCriterion(_Strict):
     criterion_id: str
     points: float = Field(..., ge=0)
+
 
 class ScoreResult(_Strict):
     session_id: str
@@ -127,10 +150,12 @@ class ScoreResult(_Strict):
     pass_: bool = Field(..., alias="pass")
     evaluated_transcript_hash: str = Field(..., pattern=r"^[a-f0-9]{64}$")
 
+
 class RubricCriterion(_Strict):
     criterion_id: str
     description: str
     max_points: int = Field(..., ge=1, le=100)
+
 
 class RoleConfig(_Strict):
     role_id: str = Field(..., pattern=r"^customer-support$")

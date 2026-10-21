@@ -1,13 +1,16 @@
 """Run: python packages/security/scripts/validate_security_pack.py  (exit 1 on any problem)."""
+
 import json
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[3]
-sys.path.insert(0, str(ROOT))
+if __package__ in {None, ""}:
+    sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
 from packages.security.integrity import scan_secrets
 from packages.security.models import Scenario
 from packages.security.policy import load_rules
+
+ROOT = Path(__file__).resolve().parents[3]
 
 FIX = ROOT / "packages" / "security" / "fixtures"
 
@@ -18,7 +21,7 @@ def validate() -> list[str]:
     ids = [r.rule_id for r in rules]
     if len(ids) != len(set(ids)):
         errs.append("duplicate rule_id")
-    canaries = [r.forbidden_value for r in rules if r.checker_type == "CANARY_EXACT"]
+    canaries = [r.forbidden_value for r in rules if r.checker_type == "EXACT_CANARY"]
     scen = json.loads((FIX / "scenarios_m4_templates.json").read_text(encoding="utf-8"))
     sids = [s["scenario_id"] for s in scen]
     if len(sids) != len(set(sids)):
@@ -42,7 +45,11 @@ def validate() -> list[str]:
             if scan_secrets(p):
                 errs.append(f"{sid}: secret-like string in prompt")
     for f in (ROOT / "packages" / "security").rglob("*"):
-        if f.suffix in {".py", ".json", ".md"} and f.is_file() and scan_secrets(f.read_text(encoding="utf-8")):
+        if (
+            f.suffix in {".py", ".json", ".md"}
+            and f.is_file()
+            and scan_secrets(f.read_text(encoding="utf-8"))
+        ):
             errs.append(f"{f.relative_to(ROOT)}: secret-like string")
     return errs
 

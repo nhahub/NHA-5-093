@@ -1,5 +1,7 @@
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Callable, Literal
+from typing import Literal
+
 from .models import PolicyRule
 
 
@@ -31,12 +33,20 @@ def run_semantic(judge: SemanticJudge | None, rule: PolicyRule, target_text: str
             if q_strip and q_strip in target_text:
                 s = target_text.index(q_strip)
                 return "FAIL", (s, s + len(q_strip)), v.reason
-            if len(q_strip) >= 2 and q_strip[0] in ('"', "'", "«", "“") and q_strip[-1] in ('"', "'", "»", "”"):
+            if (
+                len(q_strip) >= 2
+                and q_strip[0] in ('"', "'", "«", "“")
+                and q_strip[-1] in ('"', "'", "»", "”")
+            ):
                 inner = q_strip[1:-1].strip()
                 if inner and inner in target_text:
                     s = target_text.index(inner)
                     return "FAIL", (s, s + len(inner)), v.reason
-        return "INCONCLUSIVE", None, "semantic FAIL without a verifiable quote from the target reply"
+        return (
+            "INCONCLUSIVE",
+            None,
+            "semantic FAIL without a verifiable quote from the target reply",
+        )
     if v.verdict == "PASS":
         return "PASS", None, v.reason
     return "INCONCLUSIVE", None, v.reason

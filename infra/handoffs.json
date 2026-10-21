@@ -1,7 +1,7 @@
 {
   "M2": { "path": "services/engine", "test": null, "start": null },
   "M3": { "path": "services/api", "test": null, "start": null },
-  "M4": { "path": "packages/security", "test": null, "start": null },
+  "M4": { "path": "packages/security", "test": ["uv", "run", "--locked", "python", "-m", "pytest", "tests/unit", "-q"], "start": null },
   "M5": { "path": "packages/evaluation", "test": null, "start": null },
   "M6": { "path": "apps/dashboard", "test": null, "start": null }
 }

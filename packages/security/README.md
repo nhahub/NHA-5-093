@@ -74,8 +74,8 @@
 
 - `contracts/schemas/RetestResult.schema.json` defines verdict as `enum: ["MITIGATION_VERIFIED", "VULNERABILITY_PERSISTS", "RETEST_INCONCLUSIVE"]`, with description noting:
   *"RETEST_INCONCLUSIVE is PROPOSED extension to original PRD; explicit ADR approval required before freeze."*
-- **SAFE Default Behavior:** `ALLOW_RETEST_INCONCLUSIVE_PROPOSED = False` is the default in `packages/security/mitigation.py`. Under this setting, an inconclusive retest falls back to `VULNERABILITY_PERSISTS`.
-- **Honesty Trade-off:** `VULNERABILITY_PERSISTS` safely adheres to the frozen PRD schema by erring on the side of caution (never declaring an unproven mitigation verified). However, it technically conflates an inconclusive replay with a confirmed persisting vulnerability. ADR-07 resolves this trade-off once formally approved.
+- **Default behavior:** `ALLOW_RETEST_INCONCLUSIVE_PROPOSED = False` blocks verdict generation with an explicit `ValueError` for inconclusive replay evidence. Neither persistence nor mitigation success is invented. A caller flag cannot bypass this gate.
+- **Approval remains pending:** the code does not supply owner signatures. Tests that temporarily enable the flag exercise a hypothetical approved state only.
 - **To Enable After Approval:** In `packages/security/mitigation.py`, set `ALLOW_RETEST_INCONCLUSIVE_PROPOSED = True`.
 
 ---
@@ -116,7 +116,7 @@ Labels strictly adhere to: `M4-IMPLEMENTED + TESTED`, `M4-HELPER ONLY`, `NOT M4 
 ## 6. Open Blockers and Questions for Partner Workstreams
 
 1. **For M1 (Lead & Contracts):**
-   - **ADR-07 Formal Sign-off:** Decide whether to freeze `RETEST_INCONCLUSIVE` into `RetestResult.schema.json`. M4 currently defaults to safe schema-conforming `VULNERABILITY_PERSISTS`.
+   - **ADR-07 Formal Sign-off:** Decide whether to freeze `RETEST_INCONCLUSIVE` into `RetestResult.schema.json`. M4 blocks inconclusive verdict generation until recorded approval.
    - **Planted Marker Proposal:** Review and approve `HG-INJECT-OK-7731` for indirect injection benchmark scenarios.
 2. **For M2 / M3 (Engine Controller & API):**
    - **Runtime Enforcements:** M4 provides helper checkers (`validate_tool_call`, `validate_next_probe`, `check_budget`), but runtime enforcement of FR-06, FR-10, and FR-11 is strictly the responsibility of M2's controller.
