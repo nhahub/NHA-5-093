@@ -89,8 +89,18 @@ def test_consumption_charges_both_sides_and_increments_turn() -> None:
     record_turn_consumption(state, agent_tokens=40, target_tokens=60)
     assert state["used_candidate_turns"] == 1
     assert state["used_total_tokens"] == 100
-    assert remaining_turns(state, RunLimits(max_candidate_turns=6, max_total_tokens=4000, timeout_seconds=60)) == 5
-    assert remaining_tokens(state, RunLimits(max_candidate_turns=6, max_total_tokens=4000, timeout_seconds=60)) == 3900
+    assert (
+        remaining_turns(
+            state, RunLimits(max_candidate_turns=6, max_total_tokens=4000, timeout_seconds=60)
+        )
+        == 5
+    )
+    assert (
+        remaining_tokens(
+            state, RunLimits(max_candidate_turns=6, max_total_tokens=4000, timeout_seconds=60)
+        )
+        == 3900
+    )
 
 
 def test_consumption_rejects_negative_tokens() -> None:
@@ -102,7 +112,9 @@ def test_consumption_rejects_negative_tokens() -> None:
 def test_max_retries_budget_gate() -> None:
     from services.engine.budgets import can_retry
 
-    limits = RunLimits(max_candidate_turns=6, max_total_tokens=4000, timeout_seconds=60, max_retries=1)
+    limits = RunLimits(
+        max_candidate_turns=6, max_total_tokens=4000, timeout_seconds=60, max_retries=1
+    )
     assert can_retry(0, limits) is True
     assert can_retry(1, limits) is False
     strict = RunLimits(max_candidate_turns=6, max_total_tokens=4000, timeout_seconds=60)

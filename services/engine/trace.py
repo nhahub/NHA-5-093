@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import datetime as _dt
 import uuid
-from typing import Any, Optional
+from typing import Any
 
 MAX_DECISION_FIELD_LEN = 280
 
@@ -58,15 +58,17 @@ def build_decision_event(
     strategy_id: str,
     decision_reason: str,
     usage: dict[str, int] | None = None,
-    event_id: Optional[str] = None,
-    occurred_at: Optional[str] = None,
+    event_id: str | None = None,
+    occurred_at: str | None = None,
 ) -> dict[str, Any]:
     """Build a canonical DECISION AuditEvent dict.
 
     `seq` begins at 1 per run and is strictly increasing
     (UNIQUE(run_id,seq) enforced by M3's EvidenceStore).
     """
-    safe_usage = dict(usage) if usage else {"input_tokens": 0, "output_tokens": 0, "total_tokens": 0}
+    safe_usage = (
+        dict(usage) if usage else {"input_tokens": 0, "output_tokens": 0, "total_tokens": 0}
+    )
     data = {
         "observed_fact": truncate_concise(observed_fact),
         "strategy_id": truncate_concise(strategy_id),
@@ -85,8 +87,7 @@ def build_decision_event(
         "event_type": "DECISION",
         "actor": "AGENT",
         "turn_index": int(turn_index),
-        "occurred_at": occurred_at
-        or _dt.datetime.now(_dt.timezone.utc).isoformat().replace("+00:00", "Z"),
+        "occurred_at": occurred_at or _dt.datetime.now(_dt.UTC).isoformat().replace("+00:00", "Z"),
         "data": data,
     }
 
@@ -111,8 +112,8 @@ def build_turn_event(
     model_id: str,
     usage: dict[str, int],
     latency_ms: int,
-    event_id: Optional[str] = None,
-    occurred_at: Optional[str] = None,
+    event_id: str | None = None,
+    occurred_at: str | None = None,
 ) -> dict[str, Any]:
     """Build a canonical TURN AuditEvent (actor TARGET, exact payload keys)."""
     safe = dict(usage) if isinstance(usage, dict) else {}
@@ -123,8 +124,7 @@ def build_turn_event(
         "event_type": "TURN",
         "actor": "TARGET",
         "turn_index": int(turn_index),
-        "occurred_at": occurred_at
-        or _dt.datetime.now(_dt.timezone.utc).isoformat().replace("+00:00", "Z"),
+        "occurred_at": occurred_at or _dt.datetime.now(_dt.UTC).isoformat().replace("+00:00", "Z"),
         "data": {
             "candidate_message": candidate_message,
             "target_response": target_response,
@@ -145,8 +145,8 @@ def build_check_event(
     seq: int,
     turn_index: int,
     check: dict[str, Any],
-    event_id: Optional[str] = None,
-    occurred_at: Optional[str] = None,
+    event_id: str | None = None,
+    occurred_at: str | None = None,
 ) -> dict[str, Any]:
     """Build a canonical CHECK AuditEvent (exact CheckResult payload keys).
 
@@ -171,7 +171,6 @@ def build_check_event(
         "event_type": "CHECK",
         "actor": "CHECKER",
         "turn_index": int(turn_index),
-        "occurred_at": occurred_at
-        or _dt.datetime.now(_dt.timezone.utc).isoformat().replace("+00:00", "Z"),
+        "occurred_at": occurred_at or _dt.datetime.now(_dt.UTC).isoformat().replace("+00:00", "Z"),
         "data": data,
     }

@@ -15,9 +15,11 @@ from __future__ import annotations
 
 import copy
 import time
-from typing import Any, Literal, Optional, TypedDict
+from typing import Any, Literal, TypedDict
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
+
+from .tools import NextProbe as NextProbeModel
 
 # ---------------------------------------------------------------------------
 # Contract literals (frozen by spec)
@@ -77,19 +79,6 @@ class CheckRecord(TypedDict, total=False):
     turn_index: int
 
 
-class NextProbeModel(BaseModel):
-    """Strict structured choice the LLM provider must return."""
-
-    model_config = ConfigDict(extra="forbid")
-
-    action: Literal["SEND_TURN", "STOP"]
-    strategy_id: str = Field(min_length=1)
-    message: Optional[str] = None
-    observed_fact: str = Field(min_length=1, max_length=2000)
-    decision_reason: str = Field(min_length=1, max_length=2000)
-    hypothesis: str = Field(min_length=1, max_length=2000)
-
-
 # ---------------------------------------------------------------------------
 # Mutable per-scenario state (LangGraph node state)
 # ---------------------------------------------------------------------------
@@ -116,8 +105,8 @@ class AgentState(TypedDict, total=False):
     used_total_tokens: int
     timeout_deadline: float  # epoch seconds (monotonic wall-clock deadline)
     last_observation: str
-    next_probe: Optional[dict[str, Any]]
-    terminal_outcome: Optional[TerminalOutcome]
+    next_probe: dict[str, Any] | None
+    terminal_outcome: TerminalOutcome | None
 
 
 # ---------------------------------------------------------------------------

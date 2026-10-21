@@ -88,11 +88,15 @@ def test_target_prompt_injection_is_data() -> None:
 
 def test_load_policy_returns_sanitized_subset() -> None:
     catalog = [
-        PolicyRulePublic(rule_id="POL-A", version="v1", description="a", severity="HIGH"),
-        PolicyRulePublic(rule_id="POL-B", version="v1", description="b", severity="LOW"),
+        PolicyRulePublic(
+            rule_id="POL-SEC-01-CANARY", version="v1", description="a", severity="HIGH"
+        ),
+        PolicyRulePublic(
+            rule_id="POL-BEN-01-CONTROL", version="v1", description="b", severity="LOW"
+        ),
     ]
-    subset = load_policy(["POL-B", "POL-UNKNOWN"], catalog)
-    assert [p.rule_id for p in subset] == ["POL-B"]
+    subset = load_policy(["POL-BEN-01-CONTROL", "POL-UNKNOWN"], catalog)
+    assert [p.rule_id for p in subset] == ["POL-BEN-01-CONTROL"]
     dumped = subset[0].model_dump()
     assert "forbidden_value" not in dumped and "expected_behavior" not in dumped
     assert load_policy([], catalog) == []
@@ -104,8 +108,11 @@ def test_overlimit_message_rejected() -> None:
         parse_next_probe(_valid_probe(message=big))
     with pytest.raises(ValueError):
         build_send_turn_request(
-            message=big, strategy_id="direct_request",
-            run_id="r", session_id="s", turn_index=0,
+            message=big,
+            strategy_id="direct_request",
+            run_id="r",
+            session_id="s",
+            turn_index=0,
         )
 
 
@@ -124,20 +131,31 @@ def test_controller_injects_ids_not_model() -> None:
     assert set(req) == {"run_id", "session_id", "turn_index", "message", "idempotency_key"}
     with pytest.raises(ValueError):
         build_send_turn_request(
-            message="   ", strategy_id="direct_request",
-            run_id="r", session_id="s", turn_index=1,
+            message="   ",
+            strategy_id="direct_request",
+            run_id="r",
+            session_id="s",
+            turn_index=1,
         )
     with pytest.raises(ValueError, match="1\\.\\.6"):
         build_send_turn_request(
-            message="hi", strategy_id="direct_request",
-            run_id="r", session_id="s", turn_index=0,
+            message="hi",
+            strategy_id="direct_request",
+            run_id="r",
+            session_id="s",
+            turn_index=0,
         )
 
 
 def test_canonical_stop_strategy_accepted() -> None:
-    probe = parse_next_probe({
-        "action": "STOP", "strategy_id": "end_of_budget", "message": None,
-        "observed_fact": "Budget exhausted", "decision_reason": "Stop now",
-        "hypothesis": "Done",
-    })
+    probe = parse_next_probe(
+        {
+            "action": "STOP",
+            "strategy_id": "end_of_budget",
+            "message": None,
+            "observed_fact": "Budget exhausted",
+            "decision_reason": "Stop now",
+            "hypothesis": "Done",
+        }
+    )
     assert probe.strategy_id == "end_of_budget"

@@ -17,9 +17,12 @@ Security invariants:
 from __future__ import annotations
 
 import re
-from typing import Any, Literal, Optional
+from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_validator
+
+from packages.security.models import CheckResult as CheckResult
+from packages.security.models import PolicyRulePublic as PolicyRulePublic
 
 # ---------------------------------------------------------------------------
 # Allowlisted names (frozen; changes require M1 ADR)
@@ -49,43 +52,13 @@ class UnknownToolError(ValueError):
 def validate_tool_name(name: str) -> ToolName:
     """Allowlist gate: reject unknown tools before any side effect."""
     if name not in ALLOWED_TOOLS:
-        raise UnknownToolError(
-            f"unknown tool '{name}'; allowed={list(ALLOWED_TOOLS)}"
-        )
+        raise UnknownToolError(f"unknown tool '{name}'; allowed={list(ALLOWED_TOOLS)}")
     return name  # type: ignore[return-value]
 
 
 # ---------------------------------------------------------------------------
 # Sanitized public models (no secrets cross this boundary)
 # ---------------------------------------------------------------------------
-
-
-class PolicyRulePublic(BaseModel):
-    """Sanitized rule view for the agent. No forbidden values or labels."""
-
-    model_config = ConfigDict(frozen=True, extra="forbid")
-
-    rule_id: str = Field(min_length=1)
-    version: str = Field(min_length=1)
-    description: str = Field(min_length=1)
-    severity: Literal["LOW", "MEDIUM", "HIGH", "CRITICAL"]
-    review_required: bool = True
-
-
-class CheckResult(BaseModel):
-    """Machine-only verification verdict (never a human confirmation)."""
-
-    model_config = ConfigDict(frozen=True, extra="forbid")
-
-    check_id: str = Field(min_length=1)
-    run_id: str = Field(min_length=1)
-    turn_index: int = Field(ge=0)
-    rule_id: str = Field(min_length=1)
-    result: Literal["PASS", "FAIL", "INCONCLUSIVE"]
-    evidence_event_ids: tuple[str, ...] = ()
-    evidence_spans: tuple[str, ...] = ()
-    checker_version: str = Field(min_length=1)
-    reason: str = ""
 
 
 # ---------------------------------------------------------------------------
@@ -100,17 +73,15 @@ class NextProbe(BaseModel):
 
     action: Literal["SEND_TURN", "STOP"]
     strategy_id: str = Field(min_length=1)
-    message: Optional[str] = Field(default=None, max_length=2000)
+    message: str | None = Field(..., max_length=2000)
     observed_fact: str = Field(min_length=1, max_length=2000)
     decision_reason: str = Field(min_length=1, max_length=2000)
     hypothesis: str = Field(min_length=1, max_length=2000)
 
     @model_validator(mode="after")
-    def _check_invariants(self) -> "NextProbe":
+    def _check_invariants(self) -> NextProbe:
         if self.strategy_id not in ALLOWED_STRATEGIES:
-            raise ValueError(
-                f"strategy_id '{self.strategy_id}' not in {list(ALLOWED_STRATEGIES)}"
-            )
+            raise ValueError(f"strategy_id '{self.strategy_id}' not in {list(ALLOWED_STRATEGIES)}")
         if self.action == "STOP":
             if self.message is not None:
                 raise ValueError("STOP requires message is None")
@@ -175,8 +146,7 @@ def build_send_turn_request(
         raise ValueError("send_turn requires a non-empty message")
     if len(message) > MAX_MESSAGE_CHARS:
         raise ValueError(
-            f"send_turn message exceeds {MAX_MESSAGE_CHARS} chars "
-            f"(got {len(message)})"
+            f"send_turn message exceeds {MAX_MESSAGE_CHARS} chars (got {len(message)})"
         )
     if strategy_id not in ALLOWED_STRATEGIES:
         raise ValueError(f"strategy_id '{strategy_id}' not in {list(ALLOWED_STRATEGIES)}")

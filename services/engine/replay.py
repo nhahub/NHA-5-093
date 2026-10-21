@@ -31,8 +31,15 @@ _REQUIRED_TOP_KEYS = (
 _REQUIRED_DATA_KEYS: dict[str, tuple[str, ...]] = {
     "DECISION": ("observed_fact", "strategy_id", "decision_reason", "usage"),
     "TURN": ("candidate_message", "target_response", "model_id", "usage", "latency_ms"),
-    "CHECK": ("check_id", "rule_id", "result", "evidence_event_ids",
-              "evidence_spans", "checker_version", "reason"),
+    "CHECK": (
+        "check_id",
+        "rule_id",
+        "result",
+        "evidence_event_ids",
+        "evidence_spans",
+        "checker_version",
+        "reason",
+    ),
 }
 
 
@@ -78,11 +85,13 @@ def replay_trace(trace_path: str | Path) -> dict[str, Any]:
     transcript = payload.get("transcript", [])
     turns = [e for e in events if isinstance(e, dict) and e.get("event_type") == "TURN"]
     if isinstance(transcript, list) and len(turns) != len(transcript):
-        errors.append(
-            f"TURN event count ({len(turns)}) != transcript length ({len(transcript)})"
-        )
+        errors.append(f"TURN event count ({len(turns)}) != transcript length ({len(transcript)})")
     used_turns = payload.get("used_candidate_turns")
-    if isinstance(used_turns, int) and isinstance(transcript, list) and used_turns != len(transcript):
+    if (
+        isinstance(used_turns, int)
+        and isinstance(transcript, list)
+        and used_turns != len(transcript)
+    ):
         errors.append(
             f"used_candidate_turns ({used_turns}) != transcript length ({len(transcript)})"
         )
@@ -93,9 +102,7 @@ def replay_trace(trace_path: str | Path) -> dict[str, Any]:
     return _report(payload, events=events, errors=errors)
 
 
-def _report(
-    payload: dict[str, Any], *, events: list, errors: list[str]
-) -> dict[str, Any]:
+def _report(payload: dict[str, Any], *, events: list, errors: list[str]) -> dict[str, Any]:
     return {
         "trace_id": payload.get("trace_id", ""),
         "run_id": payload.get("run_id", ""),

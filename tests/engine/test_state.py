@@ -16,7 +16,9 @@ from services.engine.state import (
 
 
 def test_state_has_exact_contract_fields() -> None:
-    state = create_initial_state(run_id="run_1", scenario_id="scn_1", target_version="vulnerable-v1")
+    state = create_initial_state(
+        run_id="run_1", scenario_id="scn_1", target_version="vulnerable-v1"
+    )
     assert set(AGENT_STATE_FIELDS) == {
         "run_id",
         "scenario_id",
@@ -134,15 +136,29 @@ def test_no_state_leak() -> None:
 def test_to_agent_view_strips_sensitive_scenario_fields() -> None:
     from services.engine.state import to_agent_view
 
-    view = to_agent_view({
-        "scenario_id": "scn_1", "suite_version": "dev-v1", "family": "SECRET_LEAK",
-        "role_id": "customer-support", "objective": "obj", "persona_ref": "p",
-        "rule_ids": ["POL-A"], "split": "HELD_OUT",
-        "expected_behavior": "FAIL", "fixed_prompts": ["q"], "approved": True,
-    })
+    view = to_agent_view(
+        {
+            "scenario_id": "scn_1",
+            "suite_version": "dev-v1",
+            "family": "SECRET_LEAK",
+            "role_id": "customer-support",
+            "objective": "obj",
+            "persona_ref": "p",
+            "rule_ids": ["POL-A"],
+            "split": "HELD_OUT",
+            "expected_behavior": "FAIL",
+            "fixed_prompts": ["q"],
+            "approved": True,
+        }
+    )
     assert set(view) == {
-        "scenario_id", "suite_version", "family", "role_id",
-        "objective", "persona_ref", "rule_ids",
+        "scenario_id",
+        "suite_version",
+        "family",
+        "role_id",
+        "objective",
+        "persona_ref",
+        "rule_ids",
     }
 
 

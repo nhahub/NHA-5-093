@@ -47,15 +47,22 @@ def test_decision_fields_are_concise_and_usage_recorded() -> None:
 
 def test_decision_rejects_empty_required_fields() -> None:
     with pytest.raises(ValueError):
-        validate_decision_data({"observed_fact": "", "strategy_id": "s", "decision_reason": "r", "usage": {}})
+        validate_decision_data(
+            {"observed_fact": "", "strategy_id": "s", "decision_reason": "r", "usage": {}}
+        )
     with pytest.raises(ValueError):
-        validate_decision_data({"observed_fact": "o", "strategy_id": "", "decision_reason": "r", "usage": {}})
+        validate_decision_data(
+            {"observed_fact": "o", "strategy_id": "", "decision_reason": "r", "usage": {}}
+        )
 
 
 def test_turn_event_matches_canonical_payload() -> None:
     event = build_turn_event(
-        run_id="run_1", seq=2, turn_index=1,
-        candidate_message="hi", target_response="hello",
+        run_id="run_1",
+        seq=2,
+        turn_index=1,
+        candidate_message="hi",
+        target_response="hello",
         model_id="mock-target-v1",
         usage={"input_tokens": 70, "output_tokens": 13, "total_tokens": 83},
         latency_ms=120,
@@ -63,7 +70,11 @@ def test_turn_event_matches_canonical_payload() -> None:
     assert event["event_type"] == "TURN"
     assert event["actor"] == "TARGET"
     assert set(event["data"]) == {
-        "candidate_message", "target_response", "model_id", "usage", "latency_ms",
+        "candidate_message",
+        "target_response",
+        "model_id",
+        "usage",
+        "latency_ms",
     }
 
 
@@ -71,9 +82,15 @@ def test_check_event_carries_flat_check_payload() -> None:
     from services.engine.tools import CheckResult
 
     check = CheckResult(
-        check_id="chk_1", run_id="run_1", turn_index=1, rule_id="POL-SEC-01-CANARY",
-        result="FAIL", evidence_event_ids=("e1",), evidence_spans=("s",),
-        checker_version="checker-v1", reason="r",
+        check_id="chk_1",
+        run_id="run_1",
+        turn_index=1,
+        rule_id="POL-SEC-01-CANARY",
+        result="FAIL",
+        evidence_event_ids=("e1",),
+        evidence_spans=("s",),
+        checker_version="checker-v1",
+        reason="r",
     )
     event = build_check_event(run_id="run_1", seq=3, turn_index=1, check=check)
     assert event["event_type"] == "CHECK"

@@ -15,7 +15,7 @@ offline in Mock mode.
 from __future__ import annotations
 
 import time
-from typing import Literal, Optional
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
@@ -55,8 +55,7 @@ class RunLimits(BaseModel):
     def _enforce_turn_cap(cls, value: int) -> int:
         if value > MAX_CANDIDATE_TURNS_HARD_CAP:
             raise ValueError(
-                f"max_candidate_turns={value} exceeds contract cap "
-                f"{MAX_CANDIDATE_TURNS_HARD_CAP}"
+                f"max_candidate_turns={value} exceeds contract cap {MAX_CANDIDATE_TURNS_HARD_CAP}"
             )
         return value
 
@@ -76,7 +75,7 @@ def can_send_turn(
     *,
     now: float | None = None,
     token_reservation: int = DEFAULT_TOKEN_RESERVATION,
-) -> tuple[bool, Optional[TerminationReason]]:
+) -> tuple[bool, TerminationReason | None]:
     """Decide whether another adapter call is allowed.
 
     Must be called BEFORE every send_turn. Returns (True, None) when the
@@ -122,8 +121,7 @@ def record_turn_consumption(
     """
     if agent_tokens < 0 or target_tokens < 0:
         raise ValueError(
-            f"token counts must be non-negative "
-            f"(agent={agent_tokens}, target={target_tokens})"
+            f"token counts must be non-negative (agent={agent_tokens}, target={target_tokens})"
         )
     state["used_candidate_turns"] = int(state.get("used_candidate_turns", 0)) + 1
     state["used_total_tokens"] = (

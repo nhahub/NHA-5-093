@@ -18,6 +18,7 @@ package = false
 
 [tool.uv.workspace]
 members = ["services/*", "packages/*"]
+exclude = ["services/__pycache__", "packages/__pycache__"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
