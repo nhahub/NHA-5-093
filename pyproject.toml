@@ -17,7 +17,7 @@ dev = ["pytest>=8.3,<9", "ruff>=0.11,<0.12", "httpx>=0.28,<0.29"]
 package = false
 
 [tool.uv.workspace]
-members = ["services/*", "packages/*"]
+members = ["packages/security"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
