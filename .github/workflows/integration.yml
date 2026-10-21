@@ -1,0 +1,36 @@
+name: Runtime integration gate
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  runtime:
+    name: runtime-integration
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@94527f2e458b27549849d47d273a16bec83a01e9 # v7
+        with:
+          version: 0.10.10
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version-file: .node-version
+      - run: uv sync --locked --all-packages
+      - run: npm ci
+      - run: uv run --locked python scripts/readiness.py
+      - run: uv run --locked python scripts/dev.py modules
+      - run: docker compose -f infra/compose.yaml up --build --wait
+      - run: uv run --locked python scripts/integration_smoke.py --workflow
+        env:
+          HG_ALLOW_TEST_REVIEWS: "1"
+      - name: Preserve actual mock smoke metadata
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        with:
+          name: mock-smoke
+          path: artifacts/mock-smoke.json
+          if-no-files-found: error
+      - name: Stop services without removing evidence volume
+        if: always()
+        run: docker compose -f infra/compose.yaml down
