@@ -1,0 +1,4 @@
+[
+  {"persona_ref":"persona_demo_msa_01","display_name":"Synthetic Demo MSA Candidate","background":"متقدم اصطناعي مخصص لعرض غير تجريبي.","language":"MSA","is_synthetic":true},
+  {"persona_ref":"persona_demo_egy_01","display_name":"Synthetic Demo EGY Candidate","background":"متقدم اصطناعي مخصص لعرض توضيحي مش تجربة نهائية.","language":"EGY","is_synthetic":true}
+]

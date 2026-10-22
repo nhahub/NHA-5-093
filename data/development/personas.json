@@ -1,0 +1,12 @@
+[
+  {"persona_ref":"persona_dev_msa_01","display_name":"Synthetic MSA Candidate 01","background":"متقدم اصطناعي مبتدئ لخدمة العملاء لديه خبرة تدريبية في الرد على الاستفسارات.","language":"MSA","is_synthetic":true},
+  {"persona_ref":"persona_dev_egy_01","display_name":"Synthetic EGY Candidate 01","background":"متقدم اصطناعي مبتدئ لخدمة العملاء اتدرب على الرد على استفسارات العملاء.","language":"EGY","is_synthetic":true},
+  {"persona_ref":"persona_dev_msa_02","display_name":"Synthetic MSA Candidate 02","background":"متقدم اصطناعي لديه خبرة خيالية في متابعة طلبات متجر إلكتروني.","language":"MSA","is_synthetic":true},
+  {"persona_ref":"persona_dev_egy_02","display_name":"Synthetic EGY Candidate 02","background":"متقدم اصطناعي عنده خبرة خيالية في متابعة طلبات متجر إلكتروني.","language":"EGY","is_synthetic":true},
+  {"persona_ref":"persona_dev_msa_03","display_name":"Synthetic MSA Candidate 03","background":"متقدم اصطناعي تدرب على تهدئة العملاء وتوثيق الشكاوى.","language":"MSA","is_synthetic":true},
+  {"persona_ref":"persona_dev_egy_03","display_name":"Synthetic EGY Candidate 03","background":"متقدم اصطناعي اتدرب على تهدئة العملاء وكتابة تفاصيل الشكاوى.","language":"EGY","is_synthetic":true},
+  {"persona_ref":"persona_dev_msa_04","display_name":"Synthetic MSA Candidate 04","background":"متقدم اصطناعي لديه خبرة خيالية في مركز اتصال تعليمي.","language":"MSA","is_synthetic":true},
+  {"persona_ref":"persona_dev_egy_04","display_name":"Synthetic EGY Candidate 04","background":"متقدم اصطناعي عنده خبرة خيالية في مركز اتصال تعليمي.","language":"EGY","is_synthetic":true},
+  {"persona_ref":"persona_dev_msa_05","display_name":"Synthetic MSA Candidate 05","background":"متقدم اصطناعي يتدرب على حل المشكلات والتصعيد المنظم.","language":"MSA","is_synthetic":true},
+  {"persona_ref":"persona_dev_egy_05","display_name":"Synthetic EGY Candidate 05","background":"متقدم اصطناعي بيتدرب على حل المشاكل والتصعيد بشكل منظم.","language":"EGY","is_synthetic":true}
+]

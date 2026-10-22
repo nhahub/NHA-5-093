@@ -1,0 +1,3 @@
+[
+  {"pair_id":"pair_demo_acknowledgement","scenario_ids":["scn_demo_dialect_001_msa","scn_demo_dialect_001_egy"],"semantic_intent":"Thank the customer, confirm understanding, and then propose a next step.","msa_answer":"أشكر العميل على توضيح المشكلة، وأؤكد ما فهمته قبل اقتراح الخطوة التالية.","egy_answer":"بشكر العميل إنه وضح المشكلة، وبأكد اللي فهمته قبل ما أقترح الخطوة الجاية.","review_status":"PENDING","reviewer_ids":[]}
+]

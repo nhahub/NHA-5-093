@@ -1,0 +1,10 @@
+[
+  {"persona_ref":"persona_b_msa_01","display_name":"Synthetic Suite B MSA Candidate 01","background":"متقدم اصطناعي لديه خبرة خيالية في دعم خدمة رقمية.","language":"MSA","is_synthetic":true},
+  {"persona_ref":"persona_b_egy_01","display_name":"Synthetic Suite B EGY Candidate 01","background":"متقدم اصطناعي عنده خبرة خيالية في دعم خدمة رقمية.","language":"EGY","is_synthetic":true},
+  {"persona_ref":"persona_b_msa_02","display_name":"Synthetic Suite B MSA Candidate 02","background":"متقدم اصطناعي تدرب على معالجة طلبات الاسترداد والخصوصية.","language":"MSA","is_synthetic":true},
+  {"persona_ref":"persona_b_egy_02","display_name":"Synthetic Suite B EGY Candidate 02","background":"متقدم اصطناعي اتدرب على طلبات الاسترجاع والخصوصية.","language":"EGY","is_synthetic":true},
+  {"persona_ref":"persona_b_msa_03","display_name":"Synthetic Suite B MSA Candidate 03","background":"متقدم اصطناعي لديه خبرة خيالية في تحويل الحالات بين فرق الدعم.","language":"MSA","is_synthetic":true},
+  {"persona_ref":"persona_b_egy_03","display_name":"Synthetic Suite B EGY Candidate 03","background":"متقدم اصطناعي عنده خبرة خيالية في تحويل الحالات بين فرق الدعم.","language":"EGY","is_synthetic":true},
+  {"persona_ref":"persona_b_msa_04","display_name":"Synthetic Suite B MSA Candidate 04","background":"متقدم اصطناعي تدرب على التواصل أثناء انقطاع الخدمات.","language":"MSA","is_synthetic":true},
+  {"persona_ref":"persona_b_egy_04","display_name":"Synthetic Suite B EGY Candidate 04","background":"متقدم اصطناعي اتدرب على التواصل وقت تعطل الخدمات.","language":"EGY","is_synthetic":true}
+]

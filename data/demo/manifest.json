@@ -1,0 +1,17 @@
+{
+  "manifest_version":"m5-split-manifest-v0.1-proposed",
+  "suite_version":"m5-demo-v0.1-proposed",
+  "split":"DEMO",
+  "approval_status":"PENDING_M1_MENTOR",
+  "freeze_status":"PROPOSED_NOT_FROZEN",
+  "content_sha256":null,
+  "agent_direct_access":true,
+  "scenario_file":"scenarios.json",
+  "persona_file":"personas.json",
+  "dialect_pairs_file":"dialect_pairs.json",
+  "scenario_count":2,
+  "records":[
+    {"scenario_id":"scn_demo_dialect_001_msa","paraphrase_group_id":"demo_dialect_acknowledgement","dialect_pair_id":"pair_demo_acknowledgement","review_status":"PENDING","reviewer_ids":[]},
+    {"scenario_id":"scn_demo_dialect_001_egy","paraphrase_group_id":"demo_dialect_acknowledgement","dialect_pair_id":"pair_demo_acknowledgement","review_status":"PENDING","reviewer_ids":[]}
+  ]
+}
