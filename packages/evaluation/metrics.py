@@ -34,9 +34,7 @@ def _dialect_metrics(rows: list[dict[str, Any]]) -> tuple[dict[str, Any], list[d
     if len(pair_ids) != len(set(pair_ids)):
         raise ValueError("duplicate dialect pair_id")
     session_ids = [
-        score["session_id"]
-        for row in rows
-        for score in (row["msa_score"], row["egy_score"])
+        score["session_id"] for row in rows for score in (row["msa_score"], row["egy_score"])
     ]
     if len(session_ids) != len(set(session_ids)):
         raise ValueError("dialect scores reuse a session_id")
