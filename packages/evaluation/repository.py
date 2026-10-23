@@ -11,6 +11,9 @@ import json
 from pathlib import Path
 from typing import Any
 
+from .analysis_validation import contracts
+from .validation import split_file, validate_data_tree
+
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_DATA_ROOT = PROJECT_ROOT / "data"
 
@@ -30,13 +33,12 @@ def _read_json(path: Path) -> Any:
 
 
 def _validate_contract(name: str, value: dict[str, Any]) -> None:
-    from scripts.contracts import Contracts
-
-    Contracts(PROJECT_ROOT).validate(name, value)
+    contracts().validate(name, value)
 
 
 def to_agent_view(scenario: dict[str, Any]) -> dict[str, Any]:
     """Return exactly the public Scenario fields allowed by the contract."""
+    _validate_contract("Scenario", scenario)
     view = {field: copy.deepcopy(scenario[field]) for field in AGENT_VIEW_FIELDS}
     _validate_contract("AgentScenarioView", view)
     return view
@@ -49,6 +51,8 @@ class ScenarioRepository:
         self.data_root = Path(data_root)
         self._scenarios: dict[tuple[str, str], dict[str, Any]] = {}
         self._personas: dict[str, dict[str, Any]] = {}
+        self._manifests: dict[str, dict[str, Any]] = {}
+        validate_data_tree(self.data_root)
         self._load()
 
     def _load(self) -> None:
@@ -58,8 +62,9 @@ class ScenarioRepository:
             if not manifest_path.exists():
                 continue
             manifest = _read_json(manifest_path)
-            scenario_path = split_root / manifest["scenario_file"]
-            persona_path = split_root / manifest["persona_file"]
+            self._manifests[manifest["split"]] = manifest
+            scenario_path = split_file(split_root, manifest["scenario_file"])
+            persona_path = split_file(split_root, manifest["persona_file"])
             for scenario in _read_json(scenario_path):
                 _validate_contract("Scenario", scenario)
                 key = (scenario["scenario_id"], scenario["suite_version"])
@@ -79,6 +84,11 @@ class ScenarioRepository:
             raise KeyError(f"unknown scenario/version: {scenario_id}/{suite_version}")
         if not scenario["approved"]:
             raise PermissionError(f"scenario is not approved for execution: {scenario_id}")
+        manifest = self._manifests[scenario["split"]]
+        if manifest["approval_status"] != "APPROVED" or (
+            scenario["split"] == "HELD_OUT" and manifest["freeze_status"] != "FROZEN_APPROVED"
+        ):
+            raise PermissionError("scenario split is not approved/frozen for execution")
         return copy.deepcopy(scenario)
 
     def to_agent_view(self, scenario: dict[str, Any]) -> dict[str, Any]:

@@ -55,7 +55,7 @@ def main(argv=None):
     tasks = {
         "contracts": [python, "scripts/validate_contracts.py"],
         "lint": [python, "-m", "ruff", "check", "."],
-        "test": [python, "-m", "pytest", "tests", "-q"],
+        "test": [python, "-m", "pytest", "-q"],
         "readiness": [python, "scripts/readiness.py"],
         "integration": [python, "scripts/integration_smoke.py", "--workflow"],
         "containers": ["docker", "compose", "-f", "infra/compose.yaml", "up", "--build", "--wait"],

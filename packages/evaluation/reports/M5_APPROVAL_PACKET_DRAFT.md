@@ -6,6 +6,15 @@ dataset or protocol is frozen.
 **Prepared from:** the current repository state; no final evaluation results are
 claimed.
 
+**Repair addendum (2026-10-24):** M5 is verified as `RanaSakr`; trusted-base
+registration is PR #19. PR #18 now supplies the canonical MetricsService, strict
+record/evidence/configuration validation and freeze-integrity checks. All
+datasets, selections, decisions and protocol states below remain proposals.
+Price tables alone produce null cost pending approved immutable provenance.
+The finding-based discovery formula raises a methodology error if several
+confirmed findings make its rate exceed one; reviewers must settle that unit
+before final collection. Original repository-state notes below are historical.
+
 ## Repository state checked before drafting
 
 - Git root: `HireGuard/repo`

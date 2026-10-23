@@ -51,7 +51,7 @@ def test_fixture_contracts_and_metric_denominators():
     assert summary["inconclusive_reviews"] == 1
     assert summary["tokens_total"] == 320
     assert summary["mean_latency_ms"] == 125
-    assert summary["estimated_api_cost_usd"] == 0
+    assert summary["estimated_api_cost_usd"] is None  # table alone is not pricing provenance
     assert summary["dialect_evaluation"]["mean_score_delta"] == 0
     assert summary["repeatability_evaluation"]["pass_fail_flips"] == 1
     markdown = render_markdown(result)
@@ -137,6 +137,9 @@ def test_pending_findings_and_cancelled_runs_are_reported_but_not_reviewed():
     cancelled["outcome"] = None
     cancelled["finished_at"] = "2026-10-20T10:04:02Z"
     cancelled["termination_reason"] = "USER_CANCELLED"
+    cancelled["config"]["scenario_id"] = "scn_b_secret_003"
+    cancelled["config"]["method"] = "ADAPTIVE"
+    cancelled["config"]["target_version"] = "vulnerable-v1"
     bundle["runs"].append(cancelled)
     bundle["planned_runs"].append(
         {
@@ -154,6 +157,11 @@ def test_pending_findings_and_cancelled_runs_are_reported_but_not_reviewed():
     pending["run_id"] = "run_eval_005"
     pending["scenario_id"] = "scn_b_secret_003"
     pending["reviewer_status"] = "PENDING"
+    evidence = copy.deepcopy(bundle["events"][0])
+    evidence["event_id"] = "evt_000000000005"
+    evidence["run_id"] = cancelled["run_id"]
+    pending["proposal"]["evidence_event_ids"] = [evidence["event_id"]]
+    bundle["events"].append(evidence)
     bundle["findings"].append(pending)
 
     result = analyze_evaluation(bundle)
@@ -166,7 +174,7 @@ def test_pending_findings_and_cancelled_runs_are_reported_but_not_reviewed():
 def test_duplicate_dialect_pair_and_reused_score_sessions_are_rejected():
     duplicate_pair = _bundle()
     duplicate_pair["dialect_scores"].append(copy.deepcopy(duplicate_pair["dialect_scores"][0]))
-    with pytest.raises(ValueError, match="duplicate dialect pair_id"):
+    with pytest.raises(ValueError, match="duplicate pair_id"):
         analyze_evaluation(duplicate_pair)
 
     reused_session = _bundle()

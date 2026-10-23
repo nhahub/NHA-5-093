@@ -5,6 +5,7 @@ requires-python = "==3.11.*"
 [manifest]
 members = [
     "hireguard-engine",
+    "hireguard-evaluation",
     "hireguard-integration",
     "hireguard-security",
 ]
@@ -158,6 +159,23 @@ requires-dist = [
     { name = "langgraph", specifier = ">=1.2,<2" },
     { name = "langsmith", specifier = "==0.14.11" },
     { name = "pydantic", specifier = ">=2.13,<3" },
+]
+
+[[package]]
+name = "hireguard-evaluation"
+version = "0.1.0"
+source = { virtual = "packages/evaluation" }
+dependencies = [
+    { name = "hireguard-security" },
+    { name = "jsonschema", extra = ["format"] },
+    { name = "referencing" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "hireguard-security", virtual = "packages/security" },
+    { name = "jsonschema", extras = ["format"], specifier = ">=4.23,<5" },
+    { name = "referencing", specifier = ">=0.36,<1" },
 ]
 
 [[package]]

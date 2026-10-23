@@ -14,3 +14,9 @@ Current status: **PROPOSED_NOT_FROZEN — do not run final evaluation.**
 - [ ] Manifests receive canonical content hashes and `FROZEN_APPROVED` only after
       the approvals above are recorded.
 - [ ] Any post-freeze change creates a new version and is labeled non-comparable.
+
+The validator additionally requires frozen security and scoring protocol states,
+version-matched approval rows, consistent reviewed pair records, and canonical
+`protocol_sha256` / `repeatability_sha256` manifest hashes. Formats are recorded
+in `docs/decisions/m5-integration.md`. These requirements do not record approvals;
+the checklist above is still open.

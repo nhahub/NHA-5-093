@@ -7,22 +7,35 @@ import statistics
 from collections import Counter, defaultdict
 from typing import Any
 
+from .analysis_validation import contracts, timestamp, validate_bundle
+
 
 def _ratio(numerator: int, denominator: int) -> float | None:
+    if numerator > denominator:
+        raise ValueError("metric numerator exceeds denominator; methodology review required")
     return numerator / denominator if denominator else None
 
 
 def _latest_reviews(reviews: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
     latest: dict[str, dict[str, Any]] = {}
     seen_event_ids: set[str] = set()
-    for row in reviews:
+    for row in sorted(
+        reviews, key=lambda item: (timestamp(item["reviewed_at"]), item["review_event_id"])
+    ):
         event_id = row["review_event_id"]
         if event_id in seen_event_ids:
             raise ValueError(f"duplicate review_event_id: {event_id}")
         seen_event_ids.add(event_id)
         current = latest.get(row["finding_id"])
-        if current is None or (row["reviewed_at"], event_id) > (
-            current["reviewed_at"],
+        instant = timestamp(row["reviewed_at"])
+        if (
+            current is not None
+            and instant == timestamp(current["reviewed_at"])
+            and row["decision"] != current["decision"]
+        ):
+            raise ValueError("contradictory reviews have indistinguishable ordering")
+        if current is None or (instant, event_id) > (
+            timestamp(current["reviewed_at"]),
             current["review_event_id"],
         ):
             latest[row["finding_id"]] = row
@@ -47,6 +60,8 @@ def _dialect_metrics(rows: list[dict[str, Any]]) -> tuple[dict[str, Any], list[d
                 "pair_id": row["pair_id"],
                 "msa_session_id": row["msa_score"]["session_id"],
                 "egy_session_id": row["egy_score"]["session_id"],
+                "msa_transcript_hash": row["msa_score"]["evaluated_transcript_hash"],
+                "egy_transcript_hash": row["egy_score"]["evaluated_transcript_hash"],
                 "msa_score": msa,
                 "egy_score": egy,
                 "score_delta_msa_minus_egy": msa - egy,
@@ -74,6 +89,16 @@ def _repeatability_metrics(value: dict[str, Any]) -> tuple[dict[str, Any], list[
     grouped: dict[tuple[str, str], list[dict[str, Any]]] = defaultdict(list)
     for row in samples:
         grouped[(row["transcript_id"], row["target_version"])].append(row)
+    planned = value.get("planned_entries")
+    expected_groups = (
+        {(row["transcript_id"], row["target_version"]) for row in planned}
+        if planned is not None
+        else {
+            (row["transcript_id"], target)
+            for row in samples
+            for target in ("vulnerable-v1", "hardened-v1")
+        }
+    )
     details = []
     for (transcript_id, target), rows in sorted(grouped.items()):
         indices = [int(row["repetition_index"]) for row in rows]
@@ -93,6 +118,7 @@ def _repeatability_metrics(value: dict[str, Any]) -> tuple[dict[str, Any], list[
                 "maximum": max(scores),
                 "pass_fail_flip": len(set(passes)) > 1,
                 "session_ids": sorted(row["score"]["session_id"] for row in rows),
+                "transcript_sha256": rows[0]["score"]["evaluated_transcript_hash"],
             }
         )
     incomplete = [
@@ -100,6 +126,22 @@ def _repeatability_metrics(value: dict[str, Any]) -> tuple[dict[str, Any], list[
         for row in details
         if row["observed_repeats"] != expected
     ]
+    incomplete.extend(
+        f"{transcript}/{target} has 0 of {expected} repeats"
+        for transcript, target in sorted(expected_groups - set(grouped))
+    )
+    if planned is None:
+        incomplete.append(
+            "Complete planned scoring inventory unavailable; unseen transcripts cannot be assessed."
+        )
+    else:
+        inventory = Counter((row["transcript_id"], row["target_version"]) for row in planned)
+        for transcript in sorted({row["transcript_id"] for row in planned}):
+            for target in ("vulnerable-v1", "hardened-v1"):
+                if inventory[(transcript, target)] != expected:
+                    incomplete.append(
+                        f"Planned scoring inventory incomplete for {transcript}/{target}."
+                    )
     summary = {
         "transcripts_evaluated": len({row["transcript_id"] for row in details}),
         "repeats_per_target": expected,
@@ -108,7 +150,7 @@ def _repeatability_metrics(value: dict[str, Any]) -> tuple[dict[str, Any], list[
         else None,
         "pass_fail_flips": sum(row["pass_fail_flip"] for row in details),
         "limitations": incomplete
-        or ["Population standard deviation is used; final protocol approval remains required."],
+        + ["Population standard deviation is used; final protocol approval remains required."],
     }
     return summary, details
 
@@ -118,8 +160,6 @@ def _event_metrics(
 ) -> tuple[float | None, float | None, dict[str, Any]]:
     run_ids = {row["run_id"] for row in runs}
     latency_by_run: dict[str, int] = defaultdict(int)
-    cost_total = 0.0
-    cost_events = 0
     unpriced_events = 0
     seen_events: set[str] = set()
     for event in events:
@@ -132,31 +172,22 @@ def _event_metrics(
         usage = data.get("usage")
         if event["event_type"] == "TURN":
             latency_by_run[event["run_id"]] += int(data["latency_ms"])
-            model_id = data.get("model_id")
         elif event["event_type"] == "DECISION":
-            run = next(row for row in runs if row["run_id"] == event["run_id"])
-            model_id = run["config"]["model_settings"]["model_id"]
+            pass
         else:
             continue
         if not isinstance(usage, dict):
             continue
-        rate = pricing.get(model_id)
-        if rate is None:
-            unpriced_events += 1
-            continue
-        cost_total += (
-            usage["input_tokens"] * float(rate["input_per_million"])
-            + usage["output_tokens"] * float(rate["output_per_million"])
-        ) / 1_000_000
-        cost_events += 1
+        # An unversioned price table is not approved pricing provenance. M3's
+        # immutable approved snapshot handoff remains pending; never infer cost.
+        unpriced_events += 1
     mean_latency = statistics.fmean(latency_by_run.values()) if latency_by_run else None
-    cost = cost_total if cost_events and not unpriced_events else None
     return (
         mean_latency,
-        cost,
+        None,
         {
             "latency_run_count": len(latency_by_run),
-            "priced_usage_events": cost_events,
+            "priced_usage_events": 0,
             "unpriced_usage_events": unpriced_events,
         },
     )
@@ -164,6 +195,7 @@ def _event_metrics(
 
 def analyze_evaluation(bundle: dict[str, Any]) -> dict[str, Any]:
     """Recompute report and detailed tables entirely from linked stored IDs."""
+    validate_bundle(bundle)
     planned = copy.deepcopy(bundle["planned_runs"])
     runs = copy.deepcopy(bundle["runs"])
     findings = copy.deepcopy(bundle["findings"])
@@ -284,6 +316,7 @@ def analyze_evaluation(bundle: dict[str, Any]) -> dict[str, Any]:
     limitations = list(bundle.get("limitations", []))
     if bundle.get("protocol_approval_status") != "APPROVED":
         limitations.append("Evaluation protocol is not approved; outputs are illustrative only.")
+    limitations.append("Approved immutable pricing provenance unavailable; cost remains null.")
     unlinked = len(planned) - len(linked_run_ids)
     if unlinked:
         limitations.append(f"{unlinked} planned runs do not yet have stored run IDs.")
@@ -316,6 +349,7 @@ def analyze_evaluation(bundle: dict[str, Any]) -> dict[str, Any]:
         "repeatability_evaluation": repeat_summary,
         "limitations": sorted(set(limitations)),
     }
+    contracts().validate("ReportSummary", summary)
     return {
         "report_summary": summary,
         "metric_numerators": {
@@ -335,5 +369,58 @@ def analyze_evaluation(bundle: dict[str, Any]) -> dict[str, Any]:
             "finding_ids": sorted(finding_map),
             "review_event_ids": sorted(row["review_event_id"] for row in reviews),
             "event_ids": sorted(row["event_id"] for row in events),
+            "score_session_ids": sorted(
+                [
+                    score["session_id"]
+                    for pair in bundle.get("dialect_scores", [])
+                    for score in (pair["msa_score"], pair["egy_score"])
+                ]
+                + [
+                    row["score"]["session_id"]
+                    for row in bundle.get("repeatability", {}).get("samples", [])
+                ]
+            ),
+            "transcript_hashes": sorted(
+                {
+                    score["evaluated_transcript_hash"]
+                    for pair in bundle.get("dialect_scores", [])
+                    for score in (pair["msa_score"], pair["egy_score"])
+                }
+                | {
+                    row["score"]["evaluated_transcript_hash"]
+                    for row in bundle.get("repeatability", {}).get("samples", [])
+                }
+            ),
         },
     }
+
+
+class MetricsService:
+    """Canonical synchronous service with a private, immutable batch snapshot.
+
+    Context values contain the existing analysis bundle fields except the four
+    canonical method arguments. No observation-derived plan or live I/O occurs.
+    """
+
+    def __init__(self, batch_contexts: dict[str, dict[str, Any]]):
+        self._contexts = copy.deepcopy(batch_contexts)
+        if any(value.get("batch_id", key) != key for key, value in self._contexts.items()):
+            raise ValueError("batch context identity mismatch")
+
+    def aggregate_batch(
+        self,
+        batch_id: str,
+        run_records: list[dict[str, Any]],
+        findings: list[dict[str, Any]],
+        review_events: list[dict[str, Any]],
+    ) -> dict[str, Any]:
+        if batch_id not in self._contexts:
+            raise ValueError("immutable batch context is missing")
+        bundle = copy.deepcopy(self._contexts[batch_id])
+        bundle.update(
+            batch_id=batch_id,
+            runs=copy.deepcopy(run_records),
+            findings=copy.deepcopy(findings),
+            reviews=copy.deepcopy(review_events),
+        )
+        return analyze_evaluation(bundle)["report_summary"]

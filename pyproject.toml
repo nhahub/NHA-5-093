@@ -17,10 +17,10 @@ dev = ["pytest>=8.3,<9", "ruff>=0.11,<0.12", "httpx>=0.28,<0.29"]
 package = false
 
 [tool.uv.workspace]
-members = ["services/engine", "packages/security"]
+members = ["services/engine", "packages/security", "packages/evaluation"]
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+testpaths = ["tests", "packages/evaluation/tests"]
 addopts = "-ra --basetemp=.pytest-tmp"
 markers = ["ollama: explicitly opted-in local model tests"]
 

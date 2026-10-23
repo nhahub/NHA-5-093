@@ -7,6 +7,8 @@ import hashlib
 import json
 from typing import Any
 
+from .analysis_validation import contracts, unique
+
 METHODS = ("ADAPTIVE", "FIXED")
 TARGETS = ("vulnerable-v1", "hardened-v1")
 
@@ -31,6 +33,9 @@ def build_security_run_plan(
     accounting other than the current proposal so deviations must be recorded
     through an approved protocol revision rather than silently accepted.
     """
+    unique(scenarios, "scenario_id")
+    for scenario in scenarios:
+        contracts().validate("Scenario", scenario)
     scenario_map = {row["scenario_id"]: row for row in scenarios}
     scenario_ids = list(protocol["heldout_scenario_ids"])
     repeats = list(protocol["extra_repeat_scenario_ids"])
@@ -68,6 +73,7 @@ def build_security_run_plan(
                         "model_settings": copy.deepcopy(protocol["model_settings"]),
                     }
                     run_create["model_settings"]["seed"] = scenario["seed"]
+                    contracts().validate("RunCreate", run_create)
                     entries.append(
                         {
                             "plan_id": _plan_id(
@@ -133,6 +139,8 @@ def build_repeatability_plan(
         raise ValueError("repeatability scoring invocations must remain a separate ledger")
     entries = []
     for transcript in transcripts:
+        if transcript["transcript_sha256"] != _canonical_hash(transcript["messages"]):
+            raise ValueError("repeatability transcript hash mismatch")
         for target in TARGETS:
             for repetition_index in range(1, repeats + 1):
                 entries.append(

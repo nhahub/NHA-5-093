@@ -33,8 +33,9 @@ No item below is treated as approved by this implementation.
     must connect `get_score`; current controller runs do not produce scoring data.
 11. **M4 dependencies:** semantic checking needs an approved judge, and the
     `HG-INJECT-OK-7731` marker is still explicitly an M4 proposal.
-12. **Owner mapping and review:** the repository still lists M5 as unassigned.
-    M1 must record the actual handle and cross-owner review before merge/release.
+12. **Owner mapping and review:** verified M5 handle `RanaSakr` is registered in
+    prerequisite PR #19 and this branch. #19 must land on trusted main and actual
+    current-head owner/independent human reviews remain required before merge.
 13. **M2 scenario-view integration:** `services/engine/state.py` currently contains
     a second `to_agent_view` projection that supplies defaults for missing fields
     instead of using M5's contract-validating repository projection. M1/M2/M5
@@ -44,3 +45,11 @@ No item below is treated as approved by this implementation.
     no controller call or immutable persistence path for the returned
     `ScoreResult`. M2/M3 must agree the stored session/score handoff before the
     dialect or repeatability ledgers can be executed.
+15. **Discovery unit ambiguity:** multiple confirmed rule findings from one run
+    can exceed the completed-attempt denominator and violate ReportSummary's
+    bounded rate. M1/M4/M5/mentor must choose the final unit. Until then analysis
+    rejects such an aggregate; it does not clamp, drop flags or redefine the rate.
+
+The original duplicate M2 projection remains unchanged in this repair. Contract
+tests establish identical safe views for valid scenarios, and the engine already
+validates full scenarios before projecting. Consolidation is a later M2/M5 choice.

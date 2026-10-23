@@ -34,7 +34,13 @@ jobs:
       - run: uv run --locked python scripts/validate_contracts.py
       - run: uv run --locked python -m ruff check .
       - run: uv run --locked python -m ruff format --check .
-      - run: uv run --locked python -m pytest tests -q
+      - run: uv run --locked python -m pytest -q
+      - name: Validate available evaluation datasets
+        shell: bash
+        run: |
+          if [ -d packages/evaluation ]; then
+            uv run --locked python packages/evaluation/scripts/validate_data.py
+          fi
       - name: Pending capability inventory (not integration evidence)
         run: uv run --locked python scripts/readiness.py --report-only
   secrets:
