@@ -11,4 +11,8 @@
 /package.json @WalidAbdelmeguid
 /package-lock.json @WalidAbdelmeguid
 /Makefile @WalidAbdelmeguid
+/packages/evaluation/ @RanaSakr
+/data/development/ @RanaSakr
+/data/heldout/ @RanaSakr
+/data/demo/ @RanaSakr
 # CODEOWNERS is additive to, and not a substitute for, the trusted approval policy.
